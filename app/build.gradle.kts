@@ -185,6 +185,11 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.android)
 
+    // ktlint rules for detekt. detekt-formatting is a SEPARATE artifact: without it
+    // on the analysis classpath, the `formatting:` ruleset in config/detekt/detekt.yml
+    // is rejected as an unknown config property and detekt fails the build.
+    detektPlugins(libs.detekt.formatting)
+
     // --- test ---
     testImplementation(libs.junit4)
     testImplementation(libs.robolectric)
