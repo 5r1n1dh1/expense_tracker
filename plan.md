@@ -1851,11 +1851,54 @@ SHA; and the P1 telemetry guard was tested to confirm it actually fails on a rea
 
 ---
 
-## 16. Risks & Mitigations
 
-| Risk | Impact | Mitigation |
+### 15.2 Phase status
+
+| Phase | State | Verified by |
 |---|---|---|
-| Glass hurts legibility on some wallpapers | **High** (explicit user requirement) | Contrast-tested tokens + scrims + high-contrast mode; worst-case composited colours asserted in CI across **both** schemes |
+| 0 — Skeleton & CI | **done** | `build.yml` + `instrumented.yml` green |
+| 1 — Data layer | **done** | model, Room, DAOs, seeder, setters; tests green |
+| 4 — Glass design system | **done** | `GlassContrastTest` (300 combinations) green |
+| 9 — Domain aggregation | **done** | signed nets, category rules, `ConflictResolver`, `QuotaGovernor`; tests green |
+| 2 — Google sign-in & shared ledger | next | — |
+| 3 — Sync engine | next | — |
+| 5 — Expense entry & list | next | — |
+| 6 — Dashboard | next | — |
+| 7 — Widget | next | — |
+| 8 — Categories & polish | next | — |
+| 10 — Production hardening | next | — |
+| 11 — Updates & release | next | — |
+
+**Current CI baseline (commit `02c04dd`):** `build.yml` green — unit tests, Android lint,
+detekt, both the destructive-migration and telemetry guards, debug + release APKs, and the
+7.6 MB size gate. `instrumented.yml` green on API 34, 35 and 36.
+
+### 15.3 Notes carried forward from the green phases
+
+Each of these cost a CI cycle to learn, so they are recorded here rather than rediscovered.
+
+- `ConflictResolver.applyMonotonicGuard` must keep the row's own `updatedAt` as a **third**
+  floor — `max(max(now, lastSeen), row.updatedAt)`. Found by a test: `max(now, lastSeen)` alone
+  lets a device whose clock *and* watermark are both behind rewind the ledger.
+- The frosted backdrop has **no wallpaper source**. `WallpaperManager.getFastDrawable` needs
+  `READ_WALLPAPER_INTERNAL` (or `MANAGE_EXTERNAL_STORAGE`), which Kharch must not request, and it
+  sits badly beside decision P1. There is also no software blur pass: `RenderEffect` applies via
+  `View.setRenderEffect`, which cannot affect an offscreen `Canvas.drawBitmap`, and a 1/16
+  downsample already removes the high frequencies a blur would remove.
+- `AccessibilityManager.isHighContrastTextEnabled` is **API 36**, not 34. Below 36 the in-app
+  High-Contrast setting is the only source, which suffices because it covers the same need.
+- AndroidX Test Orchestrator stays off until the suite is populated; with it on, this AGP + emulator
+  combination reports "Starting 0 tests".
+- Public design tokens are SCREAMING_SNAKE_CASE (`DARK_TEXT_PRIMARY`, `ORB_BLOOM_ALPHA`), while
+  idiomatic PascalCase stays for composables, CompositionLocals (`LocalHaptics`) and the theme
+  objects (`KharchTypography`, `KharchShapes`). detekt's default permissive `propertyPattern`
+  allows both; only `constantPattern` is strict.
+- `LongParameterList` uses `excludes:` for test sources — `excludeTestSources` is not a valid key
+  in detekt 1.23.8.
+
+---
+
+## 16. Risks & Mitigations
 | Blur causes jank / battery drain | High | Pre-baked downsampled backdrop (§8.1); `Modifier.blur` forbidden by detekt rule; frame-timing test |
 | **Spark quota exhausted by a runaway loop** (D2) | **High** — the API hard-stops for the rest of the day | `QuotaGovernor`: 60 % ceiling, debounced + batched writes, watermark reads, paged pulls, and a hard lock on `RESOURCE_EXHAUSTED` until midnight PT. Unit-tested by asserting zero further requests after exhaustion |
 | Accidentally enabling a Blaze-only service | **High** (breaks the ₹0 guarantee) | Cloud Storage / Functions / TTL / PITR explicitly out of scope (§1.2, §3.2); documented in the setup steps; a README warning |
