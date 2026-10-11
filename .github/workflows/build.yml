@@ -41,7 +41,7 @@ jobs:
       - name: Android lint
         run: ./gradlew lintDebug --stacktrace
 
-      - name: Detekt (banned APIs: Log.* of user data, Modifier.blur)
+      - name: "Detekt (banned APIs - Log calls, Modifier.blur)"
         run: ./gradlew detekt --stacktrace
 
       # P9 (§18.2): a destructive migration silently deletes a user's ledger.
