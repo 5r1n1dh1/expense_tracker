@@ -4,17 +4,11 @@ import android.app.WallpaperManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RenderEffect
-import android.graphics.Shader
 import android.graphics.drawable.Drawable
-import androidx.annotation.RequiresApi
-import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -202,11 +196,27 @@ private object FrostCache {
 }
 
 /**
- * Draws the source at 1/16 scale and applies a one-shot blur.
+ * Draws the source at 1/16 scale.
  *
  * Never called on the main thread — [rememberFrostedBackdrop] hops to
  * [Dispatchers.Default] first. Roughly 30x80 px, so the whole thing is
  * microseconds of work.
+ *
+ * ## Why there is no software blur here
+ *
+ * The obvious implementation — attach a `RenderEffect` and draw once — is not
+ * available on a `Bitmap`/`Canvas`. `RenderEffect.createBlurEffect` is real, but it
+ * is applied by **`View.setRenderEffect`**, which only affects a view's own drawing,
+ * not an offscreen `Canvas.drawBitmap` call. There is no `Paint.setRenderEffect`.
+ *
+ * That is fine, and is the whole point of this design. Downsampling to 1/16 of the
+ * linear resolution *is* the blur: a 30x80 bitmap has no high-frequency content left,
+ * so when it is stretched back to screen size it reads as a smooth frost. Doing an
+ * extra software blur pass on a bitmap that small would cost time and change nothing
+ * visible.
+ *
+ * The trade-off is deliberate and matches plan §8.2: no per-frame cost, no
+ * `RenderScript`, and identical output on every API level.
  */
 internal fun buildFrostedBackdrop(context: Context, source: FrostSource): ImageBitmap {
     val metrics = context.resources.displayMetrics
@@ -215,30 +225,7 @@ internal fun buildFrostedBackdrop(context: Context, source: FrostSource): ImageB
 
     val scaled = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     Canvas(scaled).drawBackdropSource(context, source, width, height)
-
-    // API 29–30: no RenderEffect. The 1/16 downsample alone is already low-frequency,
-    // so upscaling it reads as frosted glass — and no third-party blur dependency is
-    // needed.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return scaled.asImageBitmap()
-
-    return scaled.blurOnce().also { scaled.recycle() }
-}
-
-/**
- * One-shot blur on an already-tiny bitmap (~30x80 px), so it costs microseconds.
- *
- * Split into its own [RequiresApi] function because `Paint.setRenderEffect` only
- * exists from API 31; keeping it out of [buildFrostedBackdrop] lets the SDK_INT
- * guard above be verified by the compiler rather than by lint.
- */
-@RequiresApi(Build.VERSION_CODES.S)
-private fun Bitmap.blurOnce(): ImageBitmap {
-    val blurred = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    val paint = Paint().apply {
-        renderEffect = RenderEffect.createBlurEffect(Frost.SIGMA, Frost.SIGMA, Shader.TileMode.CLAMP)
-    }
-    Canvas(blurred).drawBitmap(this, 0f, 0f, paint)
-    return blurred.asImageBitmap()
+    return scaled.asImageBitmap()
 }
 
 private fun Canvas.drawBackdropSource(context: Context, source: FrostSource, width: Int, height: Int) {

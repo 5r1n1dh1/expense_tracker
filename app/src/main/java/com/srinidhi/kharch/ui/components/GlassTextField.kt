@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.ui.glass.GlassSurface
 import com.srinidhi.kharch.ui.theme.GlassTier
@@ -94,7 +93,6 @@ fun GlassTextField(
             trailingIcon = trailingIcon,
             keyboardOptions = keyboardOptions,
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = glass.colors.onPrimary),
-            cursorBrush = SolidColor(glass.colors.accentFill),
             colors = glassTextFieldColors(),
             shape = GlassShape.field,
         )
