@@ -24,7 +24,11 @@ jobs:
         # NOTE: every matrix value must be an array (or an `include:` mapping). A bare
         # scalar such as `target: google_apis` is rejected at parse time with
         # "Unexpected value 'google_apis'", which fails the whole run with zero jobs.
-        api-level: [34, 35, 36, 37]
+        # API 34/35/36 are the stable, downloadable x86_64 system images.
+        # API 37 is still preview-only (no x86_64 image published), so including it
+        # fails at AVD creation with "Connection refused" on port 5554. Add it once
+        # the stable image ships; compileSdk 37 is still what we compile against.
+        api-level: [34, 35, 36]
         target: [google_apis]
     runs-on: ubuntu-latest
     timeout-minutes: 75
