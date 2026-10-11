@@ -243,7 +243,18 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     }
 }
 
+// Print expected/actual for every failing test. Without this, Gradle's default
+// logger emits only "java.lang.AssertionError at Foo.kt:141", which is close to
+// useless when diagnosing from CI logs — and CI is the only place this compiles.
 tasks.withType<Test>().configureEach {
+    testLogging {
+        events("failed", "skipped")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStackTraces = true
+        showCauses = true
+        showExceptionMessage = true
+    }
+
     // Screenshot/Paparazzi tests capture to build/; keep them on disk for CI artifacts.
     systemProperty("robolectric.graphicsMode", "NATIVE")
 }

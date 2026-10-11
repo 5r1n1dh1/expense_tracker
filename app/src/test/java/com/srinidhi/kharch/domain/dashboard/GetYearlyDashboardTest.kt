@@ -134,7 +134,10 @@ class GetYearlyDashboardTest {
             date(2026, 6, 15),
         )
 
-        assertEquals(0L, dashboard.netTotal.paise)
+        // 3/2 nets to zero (900 charge fully refunded) but still counts as a tracked day,
+        // so dayCount is 2 even though only one day carries money. The 'other' row puts
+        // 100 rupees into the year total.
+        assertEquals(100 * PAISE_PER_RUPEE, dashboard.netTotal.paise)
         assertEquals(2, dashboard.dayCount)
         assertEquals(3, dashboard.entryCount)
     }

@@ -172,8 +172,15 @@ class GetMonthlyBreakdownTest {
         val year = GetYearlyDashboard(FakeClock(), ZoneId.of("Asia/Kolkata"))
             .calculate(rows, 2026, date(2026, 12, 31))
 
+        // The month is one slice of the year, so compare against that month's net and the
+        // year's per-month category view -- never against the year's own gross/refunds,
+        // which by definition cover every month, not just April.
         assertEquals(year.netForMonth(4).paise, month.netTotal.paise)
-        assertEquals(year.grossSpend.paise, month.grossSpend.paise)
-        assertEquals(year.totalRefunds.paise, month.totalRefunds.paise)
+        assertEquals(900 * PAISE_PER_RUPEE, month.grossSpend.paise)
+        assertEquals(-400 * PAISE_PER_RUPEE, month.totalRefunds.paise)
+        assertEquals(500 * PAISE_PER_RUPEE, month.netTotal.paise)
+        // The year's own totals must still include April AND September.
+        assertEquals(5_900 * PAISE_PER_RUPEE, year.grossSpend.paise)
+        assertEquals(-400 * PAISE_PER_RUPEE, year.totalRefunds.paise)
     }
 }

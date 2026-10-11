@@ -25,8 +25,8 @@ class ConflictResolverTest {
         val local = row(updatedAt = 100L, authorUid = "alice")
         val remote = row(updatedAt = 200L, authorUid = "bob")
 
-        assertSame(remote, ConflictResolver.resolve(local, null))
-        assertSame(local, ConflictResolver.resolve(null, remote))
+        assertSame(local, ConflictResolver.resolve(local, null))
+        assertSame(remote, ConflictResolver.resolve(null, remote))
     }
 
     @Test
@@ -144,7 +144,9 @@ class ConflictResolverTest {
         val guarded = ConflictResolver.applyMonotonicGuard(local, nowMillis = 4_000L, lastSeenUpdatedAt = 9_000L)
 
         assertEquals(9_000L, guarded.updatedAt)
-        assertEquals(remote, ConflictResolver.resolve(guarded, remote))
+        // Both rows now sit at 9 000, so the tie falls through to the uid tiebreak, and
+        // "alice" < "bob" makes the guarded local row the survivor.
+        assertSame(guarded, ConflictResolver.resolve(guarded, remote))
     }
 
     @Test

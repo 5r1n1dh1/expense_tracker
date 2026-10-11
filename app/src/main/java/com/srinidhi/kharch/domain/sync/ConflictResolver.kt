@@ -78,7 +78,11 @@ object ConflictResolver {
      * backwards clock cannot rewind the ledger it is part of.
      */
     fun applyMonotonicGuard(row: LedgerRow, nowMillis: Long, lastSeenUpdatedAt: Long): LedgerRow {
-        val guarded = monotonicTimestamp(nowMillis, lastSeenUpdatedAt)
+        // Never lower a timestamp: the row's own value is a third floor. Without it, a
+        // device whose clock AND watermark are both behind the ledger would stamp its edit
+        // with an older time than a row it already holds -- rewinding the ledger and
+        // making that device lose every subsequent merge.
+        val guarded = max(monotonicTimestamp(nowMillis, lastSeenUpdatedAt), row.updatedAt)
         if (guarded == row.updatedAt) return row
         return row.copy(expense = row.expense.copy(updatedAt = guarded))
     }

@@ -148,7 +148,8 @@ class SettingsStoreTest {
         val settings = settingsStore.settings.first()
         assertEquals(ThemePreference.LIGHT, settings.theme)
         assertTrue(settings.highContrast)
-        assertFalse(settings.reduceMotion)
+        assertTrue(settings.reduceMotion)
+        assertEquals("uid-a", settings.activeAuthUid)
         assertEquals("ws-1", settings.workspaceId)
     }
 

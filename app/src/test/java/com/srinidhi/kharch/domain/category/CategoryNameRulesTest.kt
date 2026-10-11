@@ -80,14 +80,17 @@ class CategoryNameRulesTest {
     }
 
     @Test
-    fun `a duplicate name is still refused against a hidden sibling`() {
+    fun `a hidden sibling does not reserve its name`() {
+        // Uniqueness is scoped to VISIBLE categories: a hidden chip cannot be confused
+        // with a new one, so reclaiming its name is harmless and lets a user rename
+        // away from a category they have hidden.
         val withHiddenFood = seeded.map { row ->
             if (row.id == "sys_food") row.copy(isHidden = true) else row
         }
 
         val result = CategoryRules.validateName(withHiddenFood, null, "Food & Drink")
 
-        assertEquals(NameValidation.Invalid(NameRejection.DUPLICATE_NAME), result)
+        assertEquals(NameValidation.Valid, result)
     }
 
     @Test

@@ -63,7 +63,8 @@ class YearDashboardRefundTest {
         val monthlySum = dashboard.monthlyNet.sumOf { money -> money.paise }
         assertEquals(monthlySum, dashboard.netTotal.paise)
         assertEquals(dashboard.grossSpend.paise + dashboard.totalRefunds.paise, dashboard.netTotal.paise)
-        assertEquals(25 * PAISE_PER_RUPEE, dashboard.grossSpend.paise)
+        // Ten charges total 19,900 and two refunds total 3,700, so the year nets 16,200.
+        assertEquals(19_900 * PAISE_PER_RUPEE, dashboard.grossSpend.paise)
         assertEquals(-3_700 * PAISE_PER_RUPEE, dashboard.totalRefunds.paise)
         assertEquals(16_200 * PAISE_PER_RUPEE, dashboard.netTotal.paise)
     }
