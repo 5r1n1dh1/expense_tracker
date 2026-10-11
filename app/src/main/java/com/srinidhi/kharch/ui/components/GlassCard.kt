@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.motion.HapticsController
 import com.srinidhi.kharch.ui.motion.KharchHaptic
 import com.srinidhi.kharch.ui.motion.LocalHaptics
+import com.srinidhi.kharch.ui.theme.GlassTier
 
 /*
  * The generic glass card: a GlassSurface with a content inset and a column body.
@@ -22,7 +22,7 @@ import com.srinidhi.kharch.ui.motion.LocalHaptics
  */
 
 /** Default inner inset. 20 dp keeps the sheen band clear of the first text line. */
-private val CardPadding = PaddingValues(20.dp)
+private val CARD_PADDING = PaddingValues(20.dp)
 
 /**
  * A frosted card.
@@ -41,7 +41,7 @@ fun GlassCard(
     modifier: Modifier = Modifier,
     tier: GlassTier = GlassTier.Exaggerated,
     shape: Shape = MaterialTheme.shapes.extraLarge,
-    contentPadding: PaddingValues = CardPadding,
+    contentPadding: PaddingValues = CARD_PADDING,
     onClick: (() -> Unit)? = null,
     haptics: HapticsController? = null,
     content: @Composable ColumnScope.() -> Unit,

@@ -1,9 +1,9 @@
 package com.srinidhi.kharch.domain
 
-import java.math.BigDecimal
-import kotlin.random.Random
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.math.BigDecimal
+import kotlin.random.Random
 
 /**
  * The integer arithmetic every aggregate is built on (§13.2 "Money & formatting").
@@ -61,8 +61,9 @@ class PaiseMathTest {
     fun `a ledger at the edge of long precision still sums exactly`() {
         val amounts = listOf(Long.MAX_VALUE / 4, Long.MAX_VALUE / 4, -Long.MAX_VALUE / 8, 7L)
 
-        assertEquals(PaiseMath.sum(amounts), amounts.fold(BigDecimal.ZERO) { acc, paise ->
+        val decimalTotal = amounts.fold(BigDecimal.ZERO) { acc, paise ->
             acc.add(BigDecimal.valueOf(paise))
-        }.longValueExact())
+        }
+        assertEquals(PaiseMath.sum(amounts), decimalTotal.longValueExact())
     }
 }

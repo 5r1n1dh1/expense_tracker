@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.GlassShape
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.currentGlassTheme
 
 /*
@@ -30,7 +30,7 @@ import com.srinidhi.kharch.ui.theme.currentGlassTheme
  */
 
 /** Inset between the Inset panel and the field. */
-private val FieldPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp)
+private val FIELD_PADDING = PaddingValues(horizontal = 4.dp, vertical = 4.dp)
 
 /**
  * A frosted inset text field.
@@ -80,7 +80,7 @@ fun GlassTextField(
         modifier = modifier,
         tier = GlassTier.Inset,
         shape = GlassShape.field,
-        contentPadding = FieldPadding,
+        contentPadding = FIELD_PADDING,
     ) {
         TextField(
             value = value,

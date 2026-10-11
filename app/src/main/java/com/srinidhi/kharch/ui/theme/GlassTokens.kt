@@ -113,9 +113,9 @@ data class GlassTokens(
             Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent))
         } else {
             Brush.verticalGradient(
-                0.00f to base.copy(alpha = base.alpha * ScrimTopFalloff),
+                0.00f to base.copy(alpha = base.alpha * SCRIM_TOP_FALLOFF),
                 0.55f to base,
-                1.00f to base.copy(alpha = base.alpha * ScrimBottomFalloff),
+                1.00f to base.copy(alpha = base.alpha * SCRIM_BOTTOM_FALLOFF),
             )
         }
     }
@@ -134,10 +134,10 @@ data class GlassTokens(
 }
 
 /** Top of the scrim ramp, as a fraction of the scrim's declared alpha. */
-private const val ScrimTopFalloff = 0.82f
+private const val SCRIM_TOP_FALLOFF = 0.82f
 
 /** Bottom of the scrim ramp, as a fraction of the scrim's declared alpha. */
-private const val ScrimBottomFalloff = 0.90f
+private const val SCRIM_BOTTOM_FALLOFF = 0.90f
 
 /**
  * The scheme-level colours every glass surface shares. These are NOT per tier:
@@ -191,7 +191,7 @@ class GlassTheme(
 // ── Resolution ───────────────────────────────────────────────────────────────
 
 /** Per-tier default scrim alpha, dark scheme. Frost tier ↔ legibility trade-off. */
-private val DarkScrimAlpha: Map<GlassTier, Float> = mapOf(
+private val DARK_SCRIM_ALPHA: Map<GlassTier, Float> = mapOf(
     GlassTier.Subtle to 0.55f,
     GlassTier.Regular to 0.45f,
     GlassTier.Exaggerated to 0.30f,
@@ -199,7 +199,7 @@ private val DarkScrimAlpha: Map<GlassTier, Float> = mapOf(
 )
 
 /** Per-tier default scrim alpha, light scheme. */
-private val LightScrimAlpha: Map<GlassTier, Float> = mapOf(
+private val LIGHT_SCRIM_ALPHA: Map<GlassTier, Float> = mapOf(
     GlassTier.Subtle to 0.52f,
     GlassTier.Regular to 0.34f,
     GlassTier.Exaggerated to 0.22f,
@@ -209,7 +209,7 @@ private val LightScrimAlpha: Map<GlassTier, Float> = mapOf(
 /**
  * Peak sheen alpha per tier, dark scheme — broad and low-opacity white (§8.5).
  */
-private val DarkSheenAlpha: Map<GlassTier, Float> = mapOf(
+private val DARK_SHEEN_ALPHA: Map<GlassTier, Float> = mapOf(
     GlassTier.Subtle to 0.10f,
     GlassTier.Regular to 0.12f,
     GlassTier.Exaggerated to 0.14f,
@@ -226,7 +226,7 @@ private val DarkSheenAlpha: Map<GlassTier, Float> = mapOf(
  * job the bright rim does in dark mode, expressed the only way a white panel
  * can express it.
  */
-private val LightSheenAlpha: Map<GlassTier, Float> = mapOf(
+private val LIGHT_SHEEN_ALPHA: Map<GlassTier, Float> = mapOf(
     GlassTier.Subtle to 0.70f,
     GlassTier.Regular to 0.78f,
     GlassTier.Exaggerated to 0.85f,
@@ -318,7 +318,7 @@ private fun tokensFor(
         LightScrim
     }
 
-    val sheenTable = if (dark) DarkSheenAlpha else LightSheenAlpha
+    val sheenTable = if (dark) DARK_SHEEN_ALPHA else LIGHT_SHEEN_ALPHA
     val sheenGain = if (highContrast) 0.6f else 1f
     val sheenPeak = sheenTable.getValue(tier) * sheenGain
     val sheenBase = if (dark) DarkInnerStroke else LightInnerStroke
@@ -348,4 +348,4 @@ private fun tokensFor(
 }
 
 private fun baseScrimAlpha(dark: Boolean, tier: GlassTier): Float =
-    if (dark) DarkScrimAlpha.getValue(tier) else LightScrimAlpha.getValue(tier)
+    if (dark) DARK_SCRIM_ALPHA.getValue(tier) else LIGHT_SCRIM_ALPHA.getValue(tier)

@@ -2,15 +2,15 @@ package com.srinidhi.kharch.domain.sync
 
 import com.srinidhi.kharch.core.time.FakeClock
 import com.srinidhi.kharch.core.time.MILLIS_PER_DAY
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 /**
  * The free-tier safety governor of D2 (§6.8, §13.2).

@@ -38,10 +38,10 @@ import com.srinidhi.kharch.ui.theme.glassTokens
  */
 
 /** The 1 dp inner stroke that replaces elevation (§8.3). */
-private val StrokeWidth = 1.dp
+private val STROKE_WIDTH = 1.dp
 
 /** Fraction of the stroke's alpha at the bottom-right end of the rim ramp. */
-private const val StrokeFalloff = 0.25f
+private const val STROKE_FALLOFF = 0.25f
 
 /**
  * A translucent frosted panel.
@@ -69,7 +69,7 @@ fun GlassSurface(
     content: @Composable BoxScope.() -> Unit,
 ) {
     val tokens: GlassTokens = glassTokens(tier, glassIntensity)
-    val strokeWidthPx = with(LocalDensity.current) { StrokeWidth.toPx() }
+    val strokeWidthPx = with(LocalDensity.current) { STROKE_WIDTH.toPx() }
 
     Box(
         modifier = modifier
@@ -94,7 +94,7 @@ fun GlassSurface(
                 val stroke = tokens.effectiveInnerStroke
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(stroke, stroke.copy(alpha = stroke.alpha * StrokeFalloff)),
+                        colors = listOf(stroke, stroke.copy(alpha = stroke.alpha * STROKE_FALLOFF)),
                         start = Offset.Zero,
                         end = Offset(size.width, size.height),
                     ),

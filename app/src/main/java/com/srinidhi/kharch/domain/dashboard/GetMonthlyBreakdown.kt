@@ -33,9 +33,10 @@ class GetMonthlyBreakdown {
         var entryCount = 0
 
         for (expense in expenses) {
-            if (expense.deletedAt != null) continue
+            // Skip tombstones and out-of-month rows with a single positive predicate rather
+            // than two `continue` jumps, which detekt flags as a readability smell.
             val date = LocalDate.ofEpochDay(expense.dateEpochDay)
-            if (date.year != year || date.monthValue != month) continue
+            if (expense.deletedAt != null || date.year != year || date.monthValue != month) continue
             val signed = expense.money.paise
             entryCount++
             val dayIndex = date.dayOfMonth - 1

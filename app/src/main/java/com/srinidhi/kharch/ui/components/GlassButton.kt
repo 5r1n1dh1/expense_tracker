@@ -19,10 +19,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.motion.KharchHaptic
 import com.srinidhi.kharch.ui.motion.LocalHaptics
 import com.srinidhi.kharch.ui.theme.GlassShape
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.LocalHighContrast
 import com.srinidhi.kharch.ui.theme.currentGlassTheme
 
@@ -37,27 +37,17 @@ import com.srinidhi.kharch.ui.theme.currentGlassTheme
  */
 
 /** The three button treatments. */
-enum class GlassButtonVariant {
-    /** Accent-filled. The primary call to action. */
-    Primary,
-
-    /** Regular glass with an onPrimary label. */
-    Secondary,
-
-    /** No fill beyond the inset scrim. Tertiary / destructive-adjacent actions. */
-    Ghost,
-}
 
 /** Minimum touch target. */
-private val MinHeight = 48.dp
+private val MIN_HEIGHT = 48.dp
 
 /** How much accent the Primary variant lays over its glass. */
-private const val AccentFillAlpha = 0.92f
+private const val ACCENT_FILL_ALPHA = 0.92f
 
 /** Label alpha when disabled. */
-private const val DisabledAlpha = 0.38f
+private const val DISABLED_ALPHA = 0.38f
 
-private val ButtonPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
+private val BUTTON_PADDING = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
 
 /**
  * A button rendered on glass.
@@ -90,7 +80,7 @@ fun GlassButton(
         GlassButtonVariant.Ghost -> GlassTier.Inset
     }
     val labelColor = when {
-        !enabled -> glass.colors.onPrimary.copy(alpha = DisabledAlpha)
+        !enabled -> glass.colors.onPrimary.copy(alpha = DISABLED_ALPHA)
         isPrimary -> glass.colors.onAccentFill
         else -> glass.colors.onPrimary
     }
@@ -98,13 +88,13 @@ fun GlassButton(
         fontWeight = if (highContrast) FontWeight.SemiBold else FontWeight.Medium,
     )
     val fillModifier = if (isPrimary && enabled) {
-        Modifier.background(glass.colors.accentFill.copy(alpha = AccentFillAlpha))
+        Modifier.background(glass.colors.accentFill.copy(alpha = ACCENT_FILL_ALPHA))
     } else {
         Modifier
     }
 
     GlassSurface(
-        modifier = modifier.heightIn(min = MinHeight),
+        modifier = modifier.heightIn(min = MIN_HEIGHT),
         tier = tier,
         shape = GlassShape.chip,
         contentPadding = PaddingValues(0.dp),
@@ -117,7 +107,7 @@ fun GlassButton(
                     haptics.perform(KharchHaptic.Confirm)
                     onClick()
                 }
-                .padding(ButtonPadding),
+                .padding(BUTTON_PADDING),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {

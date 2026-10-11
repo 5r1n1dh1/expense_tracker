@@ -5,8 +5,8 @@ import androidx.compose.animation.core.snap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,20 +21,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.motion.Motion
 import com.srinidhi.kharch.ui.motion.rememberReducedMotion
 import com.srinidhi.kharch.ui.theme.GlassShape
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.currentGlassTheme
 
 /*
@@ -54,31 +54,31 @@ import com.srinidhi.kharch.ui.theme.currentGlassTheme
  */
 
 /** Diameter of the orb. */
-private val DefaultOrbSize: Dp = 96.dp
+private val DEFAULT_ORB_SIZE: Dp = 96.dp
 
 /** Gap between the orb and the headline. */
-private val OrbGap: Dp = 24.dp
+private val ORB_GAP: Dp = 24.dp
 
 /** Gap between the headline and the subline. */
-private val TextGap: Dp = 8.dp
+private val TEXT_GAP: Dp = 8.dp
 
 /** Gap between the subline and the action button. */
-private val ActionGap: Dp = 24.dp
+private val ACTION_GAP: Dp = 24.dp
 
-/** Scale the orb settles at; it springs in from [OrbEnterScale]. */
-private const val OrbRestScale = 1f
+/** Scale the orb settles at; it springs in from [ORB_ENTER_SCALE]. */
+private const val ORB_REST_SCALE = 1f
 
 /** Scale the orb starts from — with [Motion.Bouncy] it overshoots past 1. */
-private const val OrbEnterScale = 0.72f
+private const val ORB_ENTER_SCALE = 0.72f
 
 /** Peak alpha of the accent bloom inside the orb. */
-private const val OrbBloomAlpha = 0.45f
+private const val ORB_BLOOM_ALPHA = 0.45f
 
 /** The orb's bloom centre, as a fraction of its diameter from the top-left. */
-private const val OrbBloomCenter = 0.35f
+private const val ORB_BLOOM_CENTER = 0.35f
 
 /** The orb's bloom radius, as a fraction of its diameter. */
-private const val OrbBloomRadius = 0.9f
+private const val ORB_BLOOM_RADIUS = 0.9f
 
 /**
  * The empty state.
@@ -101,7 +101,7 @@ fun EmptyState(
     modifier: Modifier = Modifier,
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
-    orbSize: Dp = DefaultOrbSize,
+    orbSize: Dp = DEFAULT_ORB_SIZE,
     orbContent: (@Composable () -> Unit)? = null,
 ) {
     val glass = currentGlassTheme()
@@ -110,7 +110,7 @@ fun EmptyState(
     LaunchedEffect(Unit) { revealed = true }
 
     val orbScale by animateFloatAsState(
-        targetValue = if (revealed) OrbRestScale else OrbEnterScale,
+        targetValue = if (revealed) ORB_REST_SCALE else ORB_ENTER_SCALE,
         animationSpec = if (reducedMotion) snap<Float>() else Motion.Bouncy,
         label = "empty-state-orb-scale",
     )
@@ -141,7 +141,7 @@ fun EmptyState(
             orbContent?.invoke()
         }
 
-        Spacer(modifier = Modifier.height(OrbGap))
+        Spacer(modifier = Modifier.height(ORB_GAP))
 
         Text(
             text = headline,
@@ -150,7 +150,7 @@ fun EmptyState(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.height(TextGap))
+        Spacer(modifier = Modifier.height(TEXT_GAP))
 
         Text(
             text = subline,
@@ -160,7 +160,7 @@ fun EmptyState(
         )
 
         if (actionLabel != null && action != null) {
-            Spacer(modifier = Modifier.height(ActionGap))
+            Spacer(modifier = Modifier.height(ACTION_GAP))
             GlassButton(text = actionLabel, onClick = action)
         }
     }
@@ -171,8 +171,8 @@ private fun orbBloom(size: Dp, accent: Color, density: Density): Brush {
     // multiplying a Dp by a Float yields another Dp, which does not compile here.
     val px = with(density) { size.toPx() }
     return Brush.radialGradient(
-        colors = listOf(accent.copy(alpha = OrbBloomAlpha), Color.Transparent),
-        center = Offset(px * OrbBloomCenter, px * OrbBloomCenter),
-        radius = px * OrbBloomRadius,
+        colors = listOf(accent.copy(alpha = ORB_BLOOM_ALPHA), Color.Transparent),
+        center = Offset(px * ORB_BLOOM_CENTER, px * ORB_BLOOM_CENTER),
+        radius = px * ORB_BLOOM_RADIUS,
     )
 }
