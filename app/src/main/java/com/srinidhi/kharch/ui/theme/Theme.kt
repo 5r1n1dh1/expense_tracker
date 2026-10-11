@@ -188,16 +188,16 @@ fun glassTokens(
 /**
  * The platform's "high text contrast" accessibility switch.
  *
- * Public since API 34 only; below that the user setting is the only source.
+ * `AccessibilityManager.isHighContrastTextEnabled` is API 36, not 34 — verified by
+ * lint's NewApi check against api-versions.xml, after an earlier guess of 34 failed
+ * the build. Below 36 the in-app setting is the only source, which is fine: our own
+ * High-Contrast toggle already covers the same need and works on every API level.
  */
 @Composable
 fun rememberHighTextContrast(context: Context = LocalContext.current): Boolean =
     remember(context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) return@remember false
         val manager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            manager?.isHighContrastTextEnabled == true
-        } else {
-            false
-        }
+        manager?.isHighContrastTextEnabled == true
     }
 
