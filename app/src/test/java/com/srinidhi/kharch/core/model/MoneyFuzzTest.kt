@@ -1,9 +1,9 @@
 package com.srinidhi.kharch.core.model
 
-import java.math.BigDecimal
-import kotlin.random.Random
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.math.BigDecimal
+import kotlin.random.Random
 
 /**
  * Precision fuzz for the money model (plan §13.2).

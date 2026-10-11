@@ -3,12 +3,12 @@ package com.srinidhi.kharch.core.money
 import com.srinidhi.kharch.core.model.Expense
 import com.srinidhi.kharch.core.model.ExpenseKind
 import com.srinidhi.kharch.core.model.MagnitudePaise
-import java.io.StringWriter
-import java.time.LocalDate
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.StringWriter
+import java.time.LocalDate
 
 /**
  * CSV export (plan §18.4). The BOM is the small detail that matters most in practice: without

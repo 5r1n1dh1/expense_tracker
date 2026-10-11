@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RenderEffect
 import android.graphics.Shader
+import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -107,11 +108,14 @@ fun rememberFrostedBackdrop(source: FrostSource = FrostSource.Auto): ImageBitmap
     val context = LocalContext.current.applicationContext
     val configuration = LocalConfiguration.current
     val layout = Triple(source, configuration.screenWidthDp, configuration.screenHeightDp)
-    val cached = FrostCache.peek(context, layout.first)
-    val backdrop by produceState<ImageBitmap?>(initialValue = cached, key1 = context, key2 = layout) {
+    val backdrop by produceState<ImageBitmap?>(
+        initialValue = FrostCache.peek(context, source),
+        key1 = context,
+        key2 = layout,
+    ) {
         if (value == null) {
             value = withContext(Dispatchers.Default) {
-                FrostCache.get(context, layout.first)
+                FrostCache.get(context, source)
             }
         }
     }
@@ -211,34 +215,40 @@ internal fun buildFrostedBackdrop(context: Context, source: FrostSource): ImageB
     val scaled = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     Canvas(scaled).drawBackdropSource(context, source, width, height)
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        // API 31+: one-shot RenderEffect on a ~30x80 bitmap — sub-millisecond.
+        val blurred = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val paint = Paint().apply {
+            renderEffect = RenderEffect.createBlurEffect(Frost.SIGMA, Frost.SIGMA, Shader.TileMode.CLAMP)
+        }
+        Canvas(blurred).drawBitmap(scaled, 0f, 0f, paint)
+        scaled.recycle()
+        blurred.asImageBitmap()
+    } else {
         // API 29–30: no RenderEffect. The 1/16 downsample alone is already
         // low-frequency, so upscaling it reads as frosted glass — and no
         // third-party blur dependency is needed.
-        return scaled.asImageBitmap()
+        scaled.asImageBitmap()
     }
-
-    // API 31+: one-shot RenderEffect on a ~30x80 bitmap — sub-millisecond.
-    val blurred = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    val paint = Paint().apply {
-        renderEffect = RenderEffect.createBlurEffect(Frost.SIGMA, Frost.SIGMA, Shader.TileMode.CLAMP)
-    }
-    Canvas(blurred).drawBitmap(scaled, 0f, 0f, paint)
-    scaled.recycle()
-    return blurred.asImageBitmap()
 }
 
 private fun Canvas.drawBackdropSource(context: Context, source: FrostSource, width: Int, height: Int) {
     // Opaque black underneath: a frosted panel with a transparent hole in it
     // would let raw content show through, which is never what we want.
     drawColor(android.graphics.Color.BLACK)
-    val gradient = R.drawable.brand_gradient
-    val wallpaper = runCatching { WallpaperManager.getInstance(context).fastDrawable }.getOrNull()
     val drawable = when (source) {
-        FrostSource.BrandGradient -> runCatching { context.getDrawable(gradient) }.getOrNull()
-        FrostSource.Wallpaper -> wallpaper
-        FrostSource.Auto -> wallpaper ?: runCatching { context.getDrawable(gradient) }.getOrNull()
+        FrostSource.BrandGradient -> context.drawableOrNull(R.drawable.brand_gradient)
+        FrostSource.Wallpaper -> context.wallpaperDrawableOrNull()
+        FrostSource.Auto -> context.wallpaperDrawableOrNull()
+            ?: context.drawableOrNull(R.drawable.brand_gradient)
     } ?: return
     drawable.setBounds(0, 0, width, height)
     drawable.draw(this)
 }
+
+private fun Context.drawableOrNull(resId: Int): Drawable? =
+    runCatching { getDrawable(resId) }.getOrNull()
+
+/** The system wallpaper, when the platform exposes one. Null is normal. */
+private fun Context.wallpaperDrawableOrNull(): Drawable? =
+    runCatching { WallpaperManager.getInstance(this).fastDrawable }.getOrNull()

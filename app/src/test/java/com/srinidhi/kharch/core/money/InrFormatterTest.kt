@@ -3,9 +3,9 @@ package com.srinidhi.kharch.core.money
 import com.srinidhi.kharch.core.model.ExpenseKind
 import com.srinidhi.kharch.core.model.MagnitudePaise
 import com.srinidhi.kharch.core.model.Money
-import java.util.Locale
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.util.Locale
 
 /**
  * Indian digit grouping is a first-class requirement (plan §5.1, §13.2), not a nicety:

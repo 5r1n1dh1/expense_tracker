@@ -61,16 +61,20 @@ object Motion {
 }
 
 /**
- * True when the user has turned animations off system-wide, or the in-app
- * "reduce motion" setting is on.
+ * True when animations must be skipped: the system animator scale is 0, or the
+ * in-app "reduce motion" setting is on.
  *
  * When true, every spring collapses to an instant state change and shared
  * elements become plain fades (§7.4).
+ *
+ * @param inAppSetting the Settings toggle. Default false so a caller that has
+ *   not wired the preference yet still honours the system switch.
  */
 @Composable
-fun rememberReducedMotion(): Boolean {
+fun rememberReducedMotion(inAppSetting: Boolean = false): Boolean {
     val context = LocalContext.current
-    return remember(context) { readAnimatorScale(context) <= 0f }
+    val systemDisabled = remember(context) { readAnimatorScale(context) <= 0f }
+    return inAppSetting || systemDisabled
 }
 
 private fun readAnimatorScale(context: Context): Float = runCatching {

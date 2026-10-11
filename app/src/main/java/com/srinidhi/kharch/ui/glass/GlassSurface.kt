@@ -70,9 +70,6 @@ fun GlassSurface(
 ) {
     val tokens: GlassTokens = glassTokens(tier, glassIntensity)
     val strokeWidthPx = with(LocalDensity.current) { StrokeWidth.toPx() }
-    val contentInset: Modifier = Modifier.then(
-        if (contentPadding == PaddingValues(0.dp)) Modifier else Modifier.padding(contentPadding),
-    )
 
     Box(
         modifier = modifier
@@ -105,7 +102,7 @@ fun GlassSurface(
                     style = Stroke(width = strokeWidthPx),
                 )
             }
-            .then(contentInset),
+            .padding(contentPadding),
     ) {
         content()
     }

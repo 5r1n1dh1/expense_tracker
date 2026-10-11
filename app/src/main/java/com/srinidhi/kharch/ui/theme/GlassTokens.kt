@@ -1,7 +1,6 @@
 package com.srinidhi.kharch.ui.theme
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.srinidhi.kharch.ui.glass.GlassIntensity
@@ -124,16 +123,14 @@ data class GlassTokens(
     /**
      * Diagonal sheen gradient, built once per token instance.
      *
+     * `end` is left infinite so the shader resolves to the *drawn band*, not to
+     * a couple of pixels: callers draw this into a `Size(width, height *
+     * sheenFraction)` rect, so the sweep follows the panel's diagonal exactly.
+     *
      * Deliberately lazy: the tokens themselves stay a pure colour/float record so
      * the JVM contrast test can read them without loading any graphics classes.
      */
-    val sheen: Brush by lazy {
-        Brush.linearGradient(
-            colors = sheenColors,
-            start = Offset.Zero,
-            end = Offset(0.35f, 1f),
-        )
-    }
+    val sheen: Brush by lazy { Brush.linearGradient(colors = sheenColors) }
 }
 
 /** Top of the scrim ramp, as a fraction of the scrim's declared alpha. */
@@ -209,7 +206,9 @@ private val LightScrimAlpha: Map<GlassTier, Float> = mapOf(
     GlassTier.Inset to 0.74f,
 )
 
-/** Peak sheen alpha per tier, dark scheme — broad and low-opacity (§8.5). */
+/**
+ * Peak sheen alpha per tier, dark scheme — broad and low-opacity white (§8.5).
+ */
 private val DarkSheenAlpha: Map<GlassTier, Float> = mapOf(
     GlassTier.Subtle to 0.10f,
     GlassTier.Regular to 0.12f,
@@ -217,7 +216,16 @@ private val DarkSheenAlpha: Map<GlassTier, Float> = mapOf(
     GlassTier.Inset to 0.05f,
 )
 
-/** Peak sheen alpha per tier, light scheme — narrower and brighter (§8.5). */
+/**
+ * Peak sheen alpha per tier, light scheme — narrow, and keyed off the DARK
+ * inner stroke rather than white.
+ *
+ * §8.5 asks for a brighter sweep in light mode; on a white panel a white sweep
+ * is literally invisible, so the highlight is inverted: a short, tight dark
+ * wash at the top-left that reads as the shadowed edge of a glass slab. Same
+ * job the bright rim does in dark mode, expressed the only way a white panel
+ * can express it.
+ */
 private val LightSheenAlpha: Map<GlassTier, Float> = mapOf(
     GlassTier.Subtle to 0.70f,
     GlassTier.Regular to 0.78f,
@@ -315,6 +323,12 @@ private fun tokensFor(
     val sheenPeak = sheenTable.getValue(tier) * sheenGain
     val sheenBase = if (dark) DarkInnerStroke else LightInnerStroke
 
+    // In high-contrast mode the scrim colour keeps its own near-opaque alpha
+    // (§8.4.6) — the per-tier ramp above is for the normal schemes only. The
+    // tint alpha is pinned to HighContrastTintAlpha regardless of intensity in
+    // that mode, so the compensation is not needed here.
+    val scrim = if (highContrast) scrimColor else scrimColor.copy(alpha = scrimAlpha)
+
     return GlassTokens(
         tier = tier,
         blurSigma = tier.blurSigma * intensity.sigmaScale,
@@ -329,7 +343,7 @@ private fun tokensFor(
         ),
         sheenFraction = if (dark) SheenHeightFractionDark else SheenHeightFractionLight,
         // Every tier carries a scrim: text never sits on a bare tint (§8.4.1).
-        scrim = scrimColor.copy(alpha = scrimAlpha),
+        scrim = scrim,
     )
 }
 

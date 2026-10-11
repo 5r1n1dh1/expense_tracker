@@ -132,6 +132,21 @@ class GlassContrastTest {
         }
     }
 
+    @Test
+    fun `high contrast makes the legibility scrim near-opaque`() {
+        listOf(true, false).forEach { dark ->
+            val theme = glassTheme(dark = dark, highContrast = true)
+            GlassTier.entries.forEach { tier ->
+                val scrim = theme.tokens(tier).scrim
+                assertTrue("${schemeName(dark)} / ${tier.name} has no scrim", scrim != null)
+                assertTrue(
+                    "${schemeName(dark)} / ${tier.name} scrim alpha ${scrim?.alpha} is not near-opaque",
+                    scrim != null && scrim.alpha >= HIGH_CONTRAST_SCRIM_MIN,
+                )
+            }
+        }
+    }
+
     // ── Structural guarantees, so a token edit cannot quietly bypass the test ─
 
     @Test
@@ -294,6 +309,9 @@ private fun surfaceBehindText(tokens: GlassTokens, backdrop: Int): Int =
 private const val HEADLINE_MIN = 7.0
 private const val BODY_MIN = 4.5
 private const val CREDIT_MIN = 3.0
+
+/** §8.4.6: in high-contrast mode the scrim becomes near-opaque. */
+private const val HIGH_CONTRAST_SCRIM_MIN = 0.85f
 private const val EPSILON = 1e-4
 private const val EPSILON_F = 1e-4f
 

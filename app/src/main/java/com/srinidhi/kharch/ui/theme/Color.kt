@@ -80,13 +80,20 @@ val LightExpenseAccentAlt = Color(0xFF14736A)
 
 // ── Legibility scrims (§8.4.3, §8.4.6) ───────────────────────────────────────
 
-/** Default scrim, dark scheme: nudges local contrast up without flattening the frost. */
+/**
+ * Default scrim, dark scheme: nudges local contrast up without flattening the
+ * frost. The alpha itself is per tier, not here.
+ */
 val DarkScrim = Color(0xFF0B1020)
 
-/** Default scrim, light scheme. */
+/** Default scrim, light scheme. Alpha is per tier. */
 val LightScrim = Color(0xFFFFFFFF)
 
-/** High-contrast scrim, dark scheme — near-opaque (mirrors `@color/glass_scrim_dark`). */
+/**
+ * High-contrast scrim, dark scheme — near-opaque, alpha included (mirrors
+ * `@color/glass_scrim_dark`). The alpha in this literal is the one that ships;
+ * high-contrast mode does not re-derive it.
+ */
 val DarkScrimHighContrast = Color(0xF20B1020)
 
 /** High-contrast scrim, light scheme — near-opaque (mirrors `@color/glass_scrim_light`). */

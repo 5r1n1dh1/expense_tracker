@@ -1,11 +1,11 @@
 package com.srinidhi.kharch.data.local
 
 import com.srinidhi.kharch.core.model.ExpenseKind
-import java.time.Instant
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Test
+import java.time.Instant
 
 /**
  * Column encoding. The enum-as-name choice is the one that matters: storing an ordinal would

@@ -1,10 +1,10 @@
 package com.srinidhi.kharch.core.time
 
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import org.junit.Assert.assertEquals
-import org.junit.Test
 
 /**
  * The clock itself, because everything downstream trusts it. Plan §13.2 requires `YearMonth`

@@ -134,7 +134,8 @@ fun EmptyState(
             tier = GlassTier.Exaggerated,
             shape = GlassShape.orb,
         ) {
-            Box(modifier = Modifier.matchParentSize().background(orbBloom(orbSize, glass.colors.accentFill)))
+            val bloom = orbBloom(orbSize, glass.colors.accentFill)
+            Box(modifier = Modifier.matchParentSize().background(bloom))
             orbContent?.invoke()
         }
 
