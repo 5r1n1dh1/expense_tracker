@@ -135,10 +135,15 @@ androidx-credentials-play-services = { module = "androidx.credentials:credential
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 
 # --- Firebase (Spark / free tier) ---
+# Firebase BOM manages versions for all of these.
+# NOTE: recent Firebase SDKs (auth 25.x, firestore 27.x) MERGED the separate
+# `-ktx` artifacts into the base artifacts — `firebase-auth-ktx` and
+# `firebase-firestore-ktx` no longer exist; the base artifacts ship the Kotlin
+# extensions themselves. Verified against firebase-bom 35.0.0's POM.
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
-firebase-auth = { module = "com.google.firebase:firebase-auth-ktx" }
-firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
-firebase-common = { module = "com.google.firebase:firebase-common-ktx" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-common = { module = "com.google.firebase:firebase-common" }
 # NOTE: firebase-crashlytics / firebase-analytics / firebase-performance are
 # DELIBERATELY ABSENT — decision P1: nothing leaves the device.
 
