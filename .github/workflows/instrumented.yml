@@ -17,17 +17,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        api-level: [34, 35, 36]
         include:
+          # Device profile ids are lowercase-with-underscores (e.g. `pixel_6`), as
+          # reported by `avdmanager list device`. Passing `Pixel_6` / `Nexus_6`
+          # fails with "No device found matching --device ...".
           - api-level: 34
             target: google_apis
-            profile: Nexus_6
+            profile: nexus_6
           - api-level: 35
             target: google_apis
-            profile: Pixel_6
+            profile: pixel_6
           - api-level: 36
             target: google_apis
-            profile: Pixel_8
+            profile: pixel_7_pro
+          - api-level: 37
+            target: google_apis
+            profile: pixel_8
     runs-on: ubuntu-latest
     timeout-minutes: 75
 
