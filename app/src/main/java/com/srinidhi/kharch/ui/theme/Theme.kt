@@ -3,6 +3,7 @@ package com.srinidhi.kharch.ui.theme
 import android.content.Context
 import android.os.Build
 import android.view.accessibility.AccessibilityManager
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -195,8 +196,17 @@ fun rememberHighTextContrast(context: Context = LocalContext.current): Boolean =
     remember(context) {
         val manager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            manager?.isHighTextContrastEnabled == true
+            manager?.hasHighTextContrast() == true
         } else {
             false
         }
     }
+
+
+/**
+ * `AccessibilityManager.isHighTextContrastEnabled` only exists from API 34.
+ * Isolating it behind [RequiresApi] lets the compiler verify the caller's
+ * SDK_INT guard instead of relying on lint to catch a missing one.
+ */
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+private fun AccessibilityManager.hasHighTextContrast(): Boolean = isHighTextContrastEnabled

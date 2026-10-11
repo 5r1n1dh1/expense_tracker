@@ -62,6 +62,8 @@ private object Keys {
     val WORKSPACE_ID: Preferences.Key<String> = stringPreferencesKey("workspace_id")
 }
 
+private const val DATA_STORE_NAME: String = "kharch_settings"
+
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_NAME)
 
 /**
@@ -155,7 +157,6 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         this?.let { stored -> enumEntries<T>().firstOrNull { it.name == stored } } ?: fallback
 
     companion object {
-        const val DATA_STORE_NAME: String = "kharch_settings"
 
         /** The process-wide instance backed by the app's private storage. */
         fun create(context: Context): SettingsStore = SettingsStore(context.applicationContext.settingsDataStore)

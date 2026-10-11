@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.glass.GlassTier
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.motion.HapticsController
 import com.srinidhi.kharch.ui.motion.KharchHaptic
 import com.srinidhi.kharch.ui.motion.LocalHaptics

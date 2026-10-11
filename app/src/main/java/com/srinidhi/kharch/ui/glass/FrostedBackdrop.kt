@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
+import androidx.annotation.RequiresApi
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -215,21 +216,29 @@ internal fun buildFrostedBackdrop(context: Context, source: FrostSource): ImageB
     val scaled = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     Canvas(scaled).drawBackdropSource(context, source, width, height)
 
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        // API 31+: one-shot RenderEffect on a ~30x80 bitmap — sub-millisecond.
-        val blurred = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val paint = Paint().apply {
-            renderEffect = RenderEffect.createBlurEffect(Frost.SIGMA, Frost.SIGMA, Shader.TileMode.CLAMP)
-        }
-        Canvas(blurred).drawBitmap(scaled, 0f, 0f, paint)
-        scaled.recycle()
-        blurred.asImageBitmap()
-    } else {
-        // API 29–30: no RenderEffect. The 1/16 downsample alone is already
-        // low-frequency, so upscaling it reads as frosted glass — and no
-        // third-party blur dependency is needed.
-        scaled.asImageBitmap()
+    // API 29–30: no RenderEffect. The 1/16 downsample alone is already low-frequency,
+    // so upscaling it reads as frosted glass — and no third-party blur dependency is
+    // needed.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return scaled.asImageBitmap()
+
+    return scaled.blurOnce().also { scaled.recycle() }
+}
+
+/**
+ * One-shot blur on an already-tiny bitmap (~30x80 px), so it costs microseconds.
+ *
+ * Split into its own [RequiresApi] function because `Paint.setRenderEffect` only
+ * exists from API 31; keeping it out of [buildFrostedBackdrop] lets the SDK_INT
+ * guard above be verified by the compiler rather than by lint.
+ */
+@RequiresApi(Build.VERSION_CODES.S)
+private fun Bitmap.blurOnce(): ImageBitmap {
+    val blurred = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val paint = Paint().apply {
+        renderEffect = RenderEffect.createBlurEffect(Frost.SIGMA, Frost.SIGMA, Shader.TileMode.CLAMP)
     }
+    Canvas(blurred).drawBitmap(this, 0f, 0f, paint)
+    return blurred.asImageBitmap()
 }
 
 private fun Canvas.drawBackdropSource(context: Context, source: FrostSource, width: Int, height: Int) {

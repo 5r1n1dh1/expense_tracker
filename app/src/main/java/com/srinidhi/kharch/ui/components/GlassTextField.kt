@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.glass.GlassTier
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.GlassShape
 import com.srinidhi.kharch.ui.theme.currentGlassTheme
 

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.glass.GlassTier
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.motion.Motion
 import com.srinidhi.kharch.ui.motion.rememberReducedMotion
 import com.srinidhi.kharch.ui.theme.GlassShape
@@ -135,7 +134,7 @@ fun EmptyState(
             shape = GlassShape.orb,
         ) {
             val bloom = orbBloom(orbSize, glass.colors.accentFill)
-            Box(modifier = Modifier.matchParentSize().background(bloom))
+            Box(modifier = Modifier.fillMaxSize().background(bloom))
             orbContent?.invoke()
         }
 
@@ -164,8 +163,13 @@ fun EmptyState(
     }
 }
 
-private fun orbBloom(size: Dp, accent: Color): Brush = Brush.radialGradient(
-    colors = listOf(accent.copy(alpha = OrbBloomAlpha), Color.Transparent),
-    center = Offset(size * OrbBloomCenter, size * OrbBloomCenter),
-    radius = size * OrbBloomRadius,
-)
+private fun orbBloom(size: Dp, accent: Color, density: Density): Brush {
+    // Brush.radialGradient takes raw PIXELS, so the Dp has to be converted first;
+    // multiplying a Dp by a Float yields another Dp, which does not compile here.
+    val px = with(density) { size.toPx() }
+    return Brush.radialGradient(
+        colors = listOf(accent.copy(alpha = OrbBloomAlpha), Color.Transparent),
+        center = Offset(px * OrbBloomCenter, px * OrbBloomCenter),
+        radius = px * OrbBloomRadius,
+    )
+}
