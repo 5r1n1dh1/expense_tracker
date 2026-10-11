@@ -2,7 +2,8 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    // No kotlin-android plugin: AGP 9.x has built-in Kotlin support.
+    // Only the Compose compiler and Serialization plugins are needed separately.
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -85,9 +86,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    // With built-in Kotlin, jvmTarget defaults to compileOptions.targetCompatibility (17),
+    // so we don't set it explicitly. We only add opt-in compiler flags here.
     kotlin {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
             freeCompilerArgs.addAll("-opt-in=kotlin.RequiresOptIn")
         }
     }

@@ -2,23 +2,34 @@
 # ---------------------------------------------------------------------------
 # TOOLCHAIN — VERIFIED COMPATIBLE SET (do not bump one without the others)
 #
-#   AGP 9.3.1  <- max AGP supported by Kotlin 2.2.x
-#   Gradle 9.5  <- minimum required by AGP 9.3
-#   Kotlin 2.2.21 <- newest Kotlin with a matching KSP release
-#   KSP 2.2.21-2.0.5 <- MUST match the Kotlin version exactly
-#   JDK 17      <- minimum required by AGP 9.x
+# AGP 9.x has BUILT-IN Kotlin support, so there is no `kotlin-android` plugin.
+# AGP bundles its own Kotlin compiler, and the bundled version is what actually
+# compiles the code. Verified from the AGP 9.3.1 POM:
 #
-# Verified against:
+#   com.android.tools.build:gradle:9.3.1
+#     -> kotlin-gradle-plugin = 2.2.10
+#     -> symbol-processing-gradle-plugin = 2.2.10-2.0.2
+#
+# Therefore:
+#   Kotlin        = 2.2.10   (must match AGP's bundled compiler)
+#   KSP           = 2.2.10-2.0.2  (must match the Kotlin it runs on)
+#   Compose/serial plugins = 2.2.10  (same Kotlin line)
+#   Gradle        = 9.5.0   (AGP 9.3 minimum)
+#   JDK           = 17      (AGP 9.x minimum)
+#
+# NOTE: we deliberately do NOT float to Kotlin 2.4.x. Newer KGP/KSP releases
+# exist, but AGP's built-in compiler is pinned to 2.2.10, and the Compose and
+# KSP plugins must agree with the bundled compiler. Verified against:
 #   - developer.android.com/build/releases/agp-9-3-0-release-notes (Gradle 9.5, JDK 17)
-#   - kotlinlang.org/docs/gradle-configure-project.html (KGP <-> AGP matrix)
-#   - repo1.maven.org KSP metadata (no KSP release exists for Kotlin 2.3+/2.4+)
+#   - developer.android.com/build/migrate-to-built-in-kotlin (built-in Kotlin)
+#   - dl.google.com AGP 9.3.1 POM (embedded Kotlin 2.2.10)
 #
 # Dependency verification (P8) pins every artifact's SHA-256.
 # ---------------------------------------------------------------------------
 agp = "9.3.1"
 gradle = "9.5.0"
-kotlin = "2.2.21"
-ksp = "2.2.21-2.0.5"
+kotlin = "2.2.10"
+ksp = "2.2.10-2.0.2"
 
 # SDK
 compileSdk = "36"
@@ -160,7 +171,13 @@ detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", 
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# NOTE: there is deliberately NO `kotlin-android` plugin here.
+# AGP 9.0+ has built-in Kotlin support, and applying org.jetbrains.kotlin.android
+# on top of it is a hard error:
+#   "The 'org.jetbrains.kotlin.android' plugin is no longer required for Kotlin
+#    support since AGP 9.0."
+# The Compose and Serialization compiler plugins are still separate and still required.
+# See: developer.android.com/build/migrate-to-built-in-kotlin
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
