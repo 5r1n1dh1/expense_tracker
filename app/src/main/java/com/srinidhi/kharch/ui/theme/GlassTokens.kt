@@ -19,29 +19,29 @@ import com.srinidhi.kharch.ui.glass.GlassIntensity
  */
 
 /** Maximum surface alpha, even when the user cranks intensity up (§8.3). */
-const val MaxTintAlpha = 0.94f
+const val MAX_TINT_ALPHA = 0.94f
 
 /** High-contrast surface alpha (§8.4.6): every tier jumps to at least this. */
-const val HighContrastTintAlpha = 0.85f
+const val HIGH_CONTRAST_TINT_ALPHA = 0.85f
 
 /** High-contrast inner-stroke alpha (§8.4.6). */
-const val HighContrastStrokeAlpha = 0.35f
+const val HIGH_CONTRAST_STROKE_ALPHA = 0.35f
 
 /** Never let a scrim become fully opaque — the surface must still read as glass. */
-const val MaxScrimAlpha = 0.96f
+const val MAX_SCRIM_ALPHA = 0.96f
 
 /**
  * How much scrim alpha is added per unit of "missing" intensity. Softening the
  * frost (GlassIntensity.Subtle) makes the panel more see-through, so the scrim
  * compensates and legibility never regresses with the user's intensity setting.
  */
-const val ScrimIntensityCompensation = 0.5f
+const val SCRIM_INTENSITY_COMPENSATION = 0.5f
 
 /** Fraction of the surface height the sheen sweep occupies (§8.4.4: top ~30 %). */
-const val SheenHeightFractionDark = 0.42f
+const val SHEEN_HEIGHT_FRACTION_DARK = 0.42f
 
 /** Narrower sweep in light mode, which needs a stronger highlight to survive white (§8.5). */
-const val SheenHeightFractionLight = 0.30f
+const val SHEEN_HEIGHT_FRACTION_LIGHT = 0.30f
 
 /**
  * The four glass tiers (§8.3). [Exaggerated] is the default and the ceiling:
@@ -157,7 +157,7 @@ data class GlassColors(
     val backdropOverlay: Color,
 ) {
     /** True when this is the dark scheme. */
-    val dark: Boolean get() = backdropStart == DarkBackdropStart
+    val dark: Boolean get() = backdropStart == DARK_BACKDROP_START
 }
 
 /**
@@ -269,29 +269,29 @@ fun glassTheme(
 fun glassColors(dark: Boolean, accentFill: Color? = null, onAccentFill: Color? = null): GlassColors =
     if (dark) {
         GlassColors(
-            onPrimary = DarkTextPrimary,
-            onSecondary = DarkTextSecondary,
-            accentFill = accentFill ?: DarkAccentFill,
-            onAccentFill = onAccentFill ?: DarkOnAccentFill,
-            credit = DarkCredit,
-            expenseAccent = DarkExpenseAccent,
-            expenseAccentAlt = DarkExpenseAccentAlt,
-            backdropStart = DarkBackdropStart,
-            backdropEnd = DarkBackdropEnd,
-            backdropOverlay = DarkBackdropOverlay,
+            onPrimary = DARK_TEXT_PRIMARY,
+            onSecondary = DARK_TEXT_SECONDARY,
+            accentFill = accentFill ?: DARK_ACCENT_FILL,
+            onAccentFill = onAccentFill ?: DARK_ON_ACCENT_FILL,
+            credit = DARK_CREDIT,
+            expenseAccent = DARK_EXPENSE_ACCENT,
+            expenseAccentAlt = DARK_EXPENSE_ACCENT_ALT,
+            backdropStart = DARK_BACKDROP_START,
+            backdropEnd = DARK_BACKDROP_END,
+            backdropOverlay = DARK_BACKDROP_OVERLAY,
         )
     } else {
         GlassColors(
-            onPrimary = LightTextPrimary,
-            onSecondary = LightTextSecondary,
-            accentFill = accentFill ?: LightAccentFill,
-            onAccentFill = onAccentFill ?: LightOnAccentFill,
-            credit = LightCredit,
-            expenseAccent = LightExpenseAccent,
-            expenseAccentAlt = LightExpenseAccentAlt,
-            backdropStart = LightBackdropStart,
-            backdropEnd = LightBackdropEnd,
-            backdropOverlay = LightBackdropOverlay,
+            onPrimary = LIGHT_TEXT_PRIMARY,
+            onSecondary = LIGHT_TEXT_SECONDARY,
+            accentFill = accentFill ?: LIGHT_ACCENT_FILL,
+            onAccentFill = onAccentFill ?: LIGHT_ON_ACCENT_FILL,
+            credit = LIGHT_CREDIT,
+            expenseAccent = LIGHT_EXPENSE_ACCENT,
+            expenseAccentAlt = LIGHT_EXPENSE_ACCENT_ALT,
+            backdropStart = LIGHT_BACKDROP_START,
+            backdropEnd = LIGHT_BACKDROP_END,
+            backdropOverlay = LIGHT_BACKDROP_OVERLAY,
         )
     }
 
@@ -302,46 +302,46 @@ private fun tokensFor(
     highContrast: Boolean,
 ): GlassTokens {
     val dark = colors.dark
-    val scaledAlpha = (tier.tintAlpha * intensity.scale).coerceIn(0f, MaxTintAlpha)
-    val tintAlpha = if (highContrast) maxOf(scaledAlpha, HighContrastTintAlpha) else scaledAlpha
-    val strokeAlpha = if (highContrast) HighContrastStrokeAlpha else tier.strokeAlpha
+    val scaledAlpha = (tier.tintAlpha * intensity.scale).coerceIn(0f, MAX_TINT_ALPHA)
+    val tintAlpha = if (highContrast) maxOf(scaledAlpha, HIGH_CONTRAST_TINT_ALPHA) else scaledAlpha
+    val strokeAlpha = if (highContrast) HIGH_CONTRAST_STROKE_ALPHA else tier.strokeAlpha
 
     // The scrim compensates for a softened frost, so lowering the intensity
     // setting can never cost legibility.
-    val scrimCompensation = (1f - intensity.scale) * ScrimIntensityCompensation
-    val scrimAlpha = (baseScrimAlpha(dark, tier) + scrimCompensation).coerceIn(0f, MaxScrimAlpha)
+    val scrimCompensation = (1f - intensity.scale) * SCRIM_INTENSITY_COMPENSATION
+    val scrimAlpha = (baseScrimAlpha(dark, tier) + scrimCompensation).coerceIn(0f, MAX_SCRIM_ALPHA)
     val scrimColor = if (highContrast) {
-        if (dark) DarkScrimHighContrast else LightScrimHighContrast
+        if (dark) DARK_SCRIM_HIGH_CONTRAST else LIGHT_SCRIM_HIGH_CONTRAST
     } else if (dark) {
-        DarkScrim
+        DARK_SCRIM
     } else {
-        LightScrim
+        LIGHT_SCRIM
     }
 
     val sheenTable = if (dark) DARK_SHEEN_ALPHA else LIGHT_SHEEN_ALPHA
     val sheenGain = if (highContrast) 0.6f else 1f
     val sheenPeak = sheenTable.getValue(tier) * sheenGain
-    val sheenBase = if (dark) DarkInnerStroke else LightInnerStroke
+    val sheenBase = if (dark) DARK_INNER_STROKE else LIGHT_INNER_STROKE
 
     // In high-contrast mode the scrim colour keeps its own near-opaque alpha
     // (§8.4.6) — the per-tier ramp above is for the normal schemes only. The
-    // tint alpha is pinned to HighContrastTintAlpha regardless of intensity in
+    // tint alpha is pinned to HIGH_CONTRAST_TINT_ALPHA regardless of intensity in
     // that mode, so the compensation is not needed here.
     val scrim = if (highContrast) scrimColor else scrimColor.copy(alpha = scrimAlpha)
 
     return GlassTokens(
         tier = tier,
         blurSigma = tier.blurSigma * intensity.sigmaScale,
-        tint = if (dark) DarkGlassTint else LightGlassTint,
+        tint = if (dark) DARK_GLASS_TINT else LIGHT_GLASS_TINT,
         tintAlpha = tintAlpha,
-        innerStroke = if (dark) DarkInnerStroke else LightInnerStroke,
+        innerStroke = if (dark) DARK_INNER_STROKE else LIGHT_INNER_STROKE,
         strokeAlpha = strokeAlpha,
         sheenColors = listOf(
             sheenBase.copy(alpha = sheenPeak),
             sheenBase.copy(alpha = sheenPeak * 0.36f),
             sheenBase.copy(alpha = 0f),
         ),
-        sheenFraction = if (dark) SheenHeightFractionDark else SheenHeightFractionLight,
+        sheenFraction = if (dark) SHEEN_HEIGHT_FRACTION_DARK else SHEEN_HEIGHT_FRACTION_LIGHT,
         // Every tier carries a scrim: text never sits on a bare tint (§8.4.1).
         scrim = scrim,
     )

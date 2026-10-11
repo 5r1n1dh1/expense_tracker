@@ -1,14 +1,14 @@
 package com.srinidhi.kharch.ui.glass
 
 import androidx.compose.ui.graphics.toArgb
-import com.srinidhi.kharch.ui.theme.DarkBackdropEnd
-import com.srinidhi.kharch.ui.theme.DarkBackdropStart
+import com.srinidhi.kharch.ui.theme.DARK_BACKDROP_END
+import com.srinidhi.kharch.ui.theme.DARK_BACKDROP_START
 import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.GlassTokens
-import com.srinidhi.kharch.ui.theme.HighContrastStrokeAlpha
-import com.srinidhi.kharch.ui.theme.HighContrastTintAlpha
-import com.srinidhi.kharch.ui.theme.LightBackdropEnd
-import com.srinidhi.kharch.ui.theme.LightBackdropStart
+import com.srinidhi.kharch.ui.theme.HIGH_CONTRAST_STROKE_ALPHA
+import com.srinidhi.kharch.ui.theme.HIGH_CONTRAST_TINT_ALPHA
+import com.srinidhi.kharch.ui.theme.LIGHT_BACKDROP_END
+import com.srinidhi.kharch.ui.theme.LIGHT_BACKDROP_START
 import com.srinidhi.kharch.ui.theme.glassTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -120,12 +120,12 @@ class GlassContrastTest {
             GlassTier.entries.forEach { tier ->
                 val label = "${schemeName(dark)} / ${tier.name}"
                 assertTrue(
-                    "$label surface alpha ${theme.tokens(tier).tintAlpha} is below $HighContrastTintAlpha",
-                    theme.tokens(tier).tintAlpha >= HighContrastTintAlpha,
+                    "$label surface alpha ${theme.tokens(tier).tintAlpha} is below $HIGH_CONTRAST_TINT_ALPHA",
+                    theme.tokens(tier).tintAlpha >= HIGH_CONTRAST_TINT_ALPHA,
                 )
                 assertFloatEquals(
                     label = "$label stroke alpha",
-                    expected = HighContrastStrokeAlpha,
+                    expected = HIGH_CONTRAST_STROKE_ALPHA,
                     actual = theme.tokens(tier).strokeAlpha,
                 )
             }
@@ -330,10 +330,10 @@ private const val TRANSPARENT = 0x00000000
 private val WORST_CASE_BACKDROPS: List<Pair<String, Int>> = listOf(
     "pure white wallpaper" to WHITE,
     "pure black wallpaper" to BLACK,
-    "brand backdrop start (dark)" to DarkBackdropStart.toArgb(),
-    "brand backdrop end (dark)" to DarkBackdropEnd.toArgb(),
-    "brand backdrop start (light)" to LightBackdropStart.toArgb(),
-    "brand backdrop end (light)" to LightBackdropEnd.toArgb(),
+    "brand backdrop start (dark)" to DARK_BACKDROP_START.toArgb(),
+    "brand backdrop end (dark)" to DARK_BACKDROP_END.toArgb(),
+    "brand backdrop start (light)" to LIGHT_BACKDROP_START.toArgb(),
+    "brand backdrop end (light)" to LIGHT_BACKDROP_END.toArgb(),
 )
 
 private fun channel(argb: Int, shift: Int): Double = ((argb shr shift) and 0xFF).toDouble()

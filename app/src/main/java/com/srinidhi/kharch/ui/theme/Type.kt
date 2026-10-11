@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.sp
  */
 
 /** OpenType tabular-figure feature. Applied to every style below. */
-const val TabularFigures = "tnum"
+const val TABULAR_FIGURES = "tnum"
 
-private fun TextStyle.tabular(): TextStyle = copy(fontFeatureSettings = TabularFigures)
+private fun TextStyle.tabular(): TextStyle = copy(fontFeatureSettings = TABULAR_FIGURES)
 
 /** Kharch's Material 3 type scale. */
 val KharchTypography: Typography = Typography(

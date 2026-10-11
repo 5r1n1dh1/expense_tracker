@@ -15,68 +15,68 @@ import androidx.compose.ui.graphics.Color
 // ── Brand ────────────────────────────────────────────────────────────────────
 
 /** Brand indigo — start of the gradient backdrop. Mirrors `@color/brand_indigo`. */
-val BrandIndigo = Color(0xFF4F5DD3)
+val BRAND_INDIGO = Color(0xFF4F5DD3)
 
 /** Brand teal — end of the gradient backdrop. Mirrors `@color/brand_teal`. */
-val BrandTeal = Color(0xFF2BB3A3)
+val BRAND_TEAL = Color(0xFF2BB3A3)
 
 // ── Dark scheme (§8.5) ────────────────────────────────────────────────────────
 
 /** Dark glass tints *towards* this colour: it darkens whatever is behind it. */
-val DarkGlassTint = Color(0xFF0B1020)
+val DARK_GLASS_TINT = Color(0xFF0B1020)
 
 /** Dark scheme inner stroke is WHITE — a bright top-left rim that replaces elevation. */
-val DarkInnerStroke = Color(0xFFFFFFFF)
+val DARK_INNER_STROKE = Color(0xFFFFFFFF)
 
 /** Primary text on glass: headlines and large amounts. */
-val DarkTextPrimary = Color(0xFFF5F7FA)
+val DARK_TEXT_PRIMARY = Color(0xFFF5F7FA)
 
 /** Secondary text on glass: body copy, supporting lines. */
-val DarkTextSecondary = Color(0xFFC3CCDC)
+val DARK_TEXT_SECONDARY = Color(0xFFC3CCDC)
 
 /** Filled-button / accent surface, dark scheme: brand indigo two shades brighter. */
-val DarkAccentFill = Color(0xFF8E9BFF)
+val DARK_ACCENT_FILL = Color(0xFF8E9BFF)
 
-/** Label colour that sits on [DarkAccentFill]. */
-val DarkOnAccentFill = Color(0xFF0B1020)
+/** Label colour that sits on [DARK_ACCENT_FILL]. */
+val DARK_ON_ACCENT_FILL = Color(0xFF0B1020)
 
 /** Credit / refund accent, dark scheme. */
-val DarkCredit = Color(0xFF7FD1AE)
+val DARK_CREDIT = Color(0xFF7FD1AE)
 
 /** Expense accent, dark scheme: brand indigo, two shades brighter. */
-val DarkExpenseAccent = Color(0xFF8E9BFF)
+val DARK_EXPENSE_ACCENT = Color(0xFF8E9BFF)
 
 /** Secondary expense accent, dark scheme: brand teal, two shades brighter. */
-val DarkExpenseAccentAlt = Color(0xFF5FE0CE)
+val DARK_EXPENSE_ACCENT_ALT = Color(0xFF5FE0CE)
 
 // ── Light scheme (§8.5) ───────────────────────────────────────────────────────
 
 /** Light glass tints towards white: it lightens whatever is behind it. */
-val LightGlassTint = Color(0xFFFFFFFF)
+val LIGHT_GLASS_TINT = Color(0xFFFFFFFF)
 
 /** Light scheme inner stroke is a DARK rim — a white rim would vanish entirely. */
-val LightInnerStroke = Color(0xFF0B1020)
+val LIGHT_INNER_STROKE = Color(0xFF0B1020)
 
 /** Primary text on glass, light scheme. */
-val LightTextPrimary = Color(0xFF0B1020)
+val LIGHT_TEXT_PRIMARY = Color(0xFF0B1020)
 
 /** Secondary text on glass, light scheme. */
-val LightTextSecondary = Color(0xFF3A4257)
+val LIGHT_TEXT_SECONDARY = Color(0xFF3A4257)
 
 /** Filled-button / accent surface, light scheme: the brand indigo itself. */
-val LightAccentFill = Color(0xFF4F5DD3)
+val LIGHT_ACCENT_FILL = Color(0xFF4F5DD3)
 
-/** Label colour that sits on [LightAccentFill]. */
-val LightOnAccentFill = Color(0xFFFFFFFF)
+/** Label colour that sits on [LIGHT_ACCENT_FILL]. */
+val LIGHT_ON_ACCENT_FILL = Color(0xFFFFFFFF)
 
 /** Credit / refund accent, light scheme. */
-val LightCredit = Color(0xFF0E6B4F)
+val LIGHT_CREDIT = Color(0xFF0E6B4F)
 
 /** Expense accent, light scheme: brand indigo, two shades darker. */
-val LightExpenseAccent = Color(0xFF2B3AA8)
+val LIGHT_EXPENSE_ACCENT = Color(0xFF2B3AA8)
 
 /** Secondary expense accent, light scheme: brand teal, two shades darker. */
-val LightExpenseAccentAlt = Color(0xFF14736A)
+val LIGHT_EXPENSE_ACCENT_ALT = Color(0xFF14736A)
 
 // ── Legibility scrims (§8.4.3, §8.4.6) ───────────────────────────────────────
 
@@ -84,54 +84,54 @@ val LightExpenseAccentAlt = Color(0xFF14736A)
  * Default scrim, dark scheme: nudges local contrast up without flattening the
  * frost. The alpha itself is per tier, not here.
  */
-val DarkScrim = Color(0xFF0B1020)
+val DARK_SCRIM = Color(0xFF0B1020)
 
 /** Default scrim, light scheme. Alpha is per tier. */
-val LightScrim = Color(0xFFFFFFFF)
+val LIGHT_SCRIM = Color(0xFFFFFFFF)
 
 /**
  * High-contrast scrim, dark scheme — near-opaque, alpha included (mirrors
  * `@color/glass_scrim_dark`). The alpha in this literal is the one that ships;
  * high-contrast mode does not re-derive it.
  */
-val DarkScrimHighContrast = Color(0xF20B1020)
+val DARK_SCRIM_HIGH_CONTRAST = Color(0xF20B1020)
 
 /** High-contrast scrim, light scheme — near-opaque (mirrors `@color/glass_scrim_light`). */
-val LightScrimHighContrast = Color(0xE6FFFFFF)
+val LIGHT_SCRIM_HIGH_CONTRAST = Color(0xE6FFFFFF)
 
 // ── Backdrop (§8.5) ───────────────────────────────────────────────────────────
 
 /** Brand gradient dimmed by 55 % — the dark scheme's static backdrop. */
-val DarkBackdropStart = Color(0xFF242A5F)
+val DARK_BACKDROP_START = Color(0xFF242A5F)
 
 /** Brand gradient dimmed by 55 % — the dark scheme's static backdrop. */
-val DarkBackdropEnd = Color(0xFF135149)
+val DARK_BACKDROP_END = Color(0xFF135149)
 
 /** Same gradient lifted 25 % towards white — the light scheme's static backdrop. */
-val LightBackdropStart = Color(0xFF7B86DE)
+val LIGHT_BACKDROP_START = Color(0xFF7B86DE)
 
 /** Same gradient lifted 25 % towards white — the light scheme's static backdrop. */
-val LightBackdropEnd = Color(0xFF60C6BA)
+val LIGHT_BACKDROP_END = Color(0xFF60C6BA)
 
 /**
  * Overlay applied over the raw gradient to reach the dimmed/lifted backdrop
  * above: 55 % black in dark, 25 % white in light.
  */
-val DarkBackdropOverlay = Color(0x8C000000)
+val DARK_BACKDROP_OVERLAY = Color(0x8C000000)
 
-/** See [DarkBackdropOverlay]. */
-val LightBackdropOverlay = Color(0x40FFFFFF)
+/** See [DARK_BACKDROP_OVERLAY]. */
+val LIGHT_BACKDROP_OVERLAY = Color(0x40FFFFFF)
 
 // ── Material scheme surfaces ──────────────────────────────────────────────────
 
 /** Light scheme page surface, visible where no glass sits on top. */
-val LightPageBackground = Color(0xFFF6F8FC)
+val LIGHT_PAGE_BACKGROUND = Color(0xFFF6F8FC)
 
 /** Dark scheme raised surface (cards behind glass, sheets). */
-val DarkSurfaceVariant = Color(0xFF23283A)
+val DARK_SURFACE_VARIANT = Color(0xFF23283A)
 
 /** Light scheme raised surface. */
-val LightSurfaceVariant = Color(0xFFE2E5EF)
+val LIGHT_SURFACE_VARIANT = Color(0xFFE2E5EF)
 
 /** Shared scrim colour for dialogs and sheets. */
-val ScrimBlack = Color(0xFF000000)
+val SCRIM_BLACK = Color(0xFF000000)
