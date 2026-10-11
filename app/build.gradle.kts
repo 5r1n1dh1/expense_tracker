@@ -103,11 +103,10 @@ android {
             isIncludeAndroidResources = true   // Robolectric-capable (§13)
             isReturnDefaultValues = true
         }
-        // NOTE: `testOptions.retry { }` was REMOVED in AGP 9 — it is now configured
-        // via the `android.experimental.androidTest.numManagedDeviceShards` /
-        // test-runner retry mechanism. CI-flakiness mitigation is instead handled by
-        // the `fail-fast: false` matrix and AndroidX Test Orchestrator (see
-        // instrumented.yml and §16). Animations stay ON so the glass motion is tested.
+        // NOTE: `testOptions.retry { }` was REMOVED in AGP 9. CI-flakiness mitigation is
+        // handled by the `fail-fast: false` emulator matrix (instrumented.yml) and by
+        // isolating each test. Animations stay ON so the glass motion is exercised.
+        //
         // NOTE: AndroidX Test Orchestrator is intentionally NOT enabled yet. With it,
         // `connectedDebugAndroidTest` reports "Test run failed to complete. No test
         // results" / "Starting 0 tests" on this AGP + emulator setup. Orchestrator gives
