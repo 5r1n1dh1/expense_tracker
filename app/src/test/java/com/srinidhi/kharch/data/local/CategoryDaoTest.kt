@@ -267,12 +267,14 @@ class CategoryDaoTest {
     private fun sampleCategory(
         id: String = "sys_food",
         name: String = "Food & Drink",
+        iconKey: String = "restaurant",
+        colorToken: String = "category.food",
         sortOrder: Int = 0,
     ) = CategoryEntity(
         id = id,
         name = name,
-        iconKey = "restaurant",
-        colorToken = "category.food",
+        iconKey = iconKey,
+        colorToken = colorToken,
         sortOrder = sortOrder,
         isSystem = true,
         isHidden = false,

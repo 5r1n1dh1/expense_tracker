@@ -55,7 +55,7 @@ class MoneyFuzzTest {
         }
 
         assertEquals(BigDecimal.valueOf(longNet, 2), decimalNet)
-        assertEquals(decimalNet.signum(), longNet.signum().toInt())
+        assertEquals(decimalNet.signum(), longNet.signum())
     }
 
     private companion object {
