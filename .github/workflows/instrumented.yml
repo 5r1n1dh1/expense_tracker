@@ -17,22 +17,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          # Device profile ids are lowercase-with-underscores (e.g. `pixel_6`), as
-          # reported by `avdmanager list device`. Passing `Pixel_6` / `Nexus_6`
-          # fails with "No device found matching --device ...".
-          - api-level: 34
-            target: google_apis
-            profile: nexus_6
-          - api-level: 35
-            target: google_apis
-            profile: pixel_6
-          - api-level: 36
-            target: google_apis
-            profile: pixel_7_pro
-          - api-level: 37
-            target: google_apis
-            profile: pixel_8
+        # No `profile:` — the valid AVD hardware-profile ids differ between emulator
+        # images and a wrong name fails the whole job ("No device found matching
+        # --device ..."). Letting the action pick the default is robust across images.
+        api-level: [34, 35, 36, 37]
+        target: google_apis
     runs-on: ubuntu-latest
     timeout-minutes: 75
 
@@ -80,7 +69,6 @@ jobs:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
           arch: x86_64
-          profile: ${{ matrix.profile }}
           disable-animations: false
           emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim -camera-back none
           script: ./gradlew connectedDebugAndroidTest --stacktrace
