@@ -40,7 +40,6 @@ android {
 
         // D5: INR is the only currency in v1, but amounts are stored as paise and the code
         // carries an ISO-4217 field, so adding a currency later needs no data migration.
-        resourceConfigurations += listOf("en")
     }
 
     signingConfigs {
@@ -104,12 +103,13 @@ android {
             isIncludeAndroidResources = true   // Robolectric-capable (§13)
             isReturnDefaultValues = true
         }
+        // NOTE: `testOptions.retry { }` was REMOVED in AGP 9 — it is now configured
+        // via the `android.experimental.androidTest.numManagedDeviceShards` /
+        // test-runner retry mechanism. CI-flakiness mitigation is instead handled by
+        // the `fail-fast: false` matrix and AndroidX Test Orchestrator (see
+        // instrumented.yml and §16). Animations stay ON so the glass motion is tested.
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
-        animationsDisabled = false            // exercise the motion system (§7.4)
-        retry {
-            maxRetries = 2                     // CI-flakiness mitigation (§16)
-            maxFailures = 3
-        }
+        animationsDisabled = false
     }
 
     packaging {
