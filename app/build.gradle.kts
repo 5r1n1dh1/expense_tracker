@@ -210,10 +210,11 @@ dependencies {
 }
 
 detekt {
+    // Applied per-module, not at the root: a root-level Detekt plugin triggers AGP
+    // root-project evaluation, which AGP 9's built-in Kotlin rejects.
     buildUponDefaultConfig = true
     allRules = false
     config.setFrom("$rootDir/config/detekt/detekt.yml")
-    baseline = file("$rootDir/config/detekt/baseline.xml")
     source.setFrom("src/main/java", "src/test/java", "src/androidTest/java")
 }
 
