@@ -112,8 +112,8 @@ room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 # --- DataStore ---
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
-protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version = "4.33.0" }
-protobuf-protoc = { module = "com.google.protobuf:protoc", version = "4.33.0" }
+protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version = "4.36.2" }
+protobuf-protoc = { module = "com.google.protobuf:protoc", version = "4.36.2" }
 
 # --- WorkManager ---
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
