@@ -90,7 +90,7 @@ class CategoryNameRulesTest {
 
         val result = CategoryRules.validateName(withHiddenFood, null, "Food & Drink")
 
-        assertEquals(NameValidation.Valid, result)
+        assertTrue(result is NameValidation.Valid)
     }
 
     @Test
