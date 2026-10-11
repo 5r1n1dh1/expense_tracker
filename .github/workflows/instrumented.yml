@@ -58,6 +58,15 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      # The emulator runner shells out to adb, but nothing starts the adb server
+      # first once setup-android is out of the pipeline ("Unable to connect to
+      # adb daemon on port: 5037"). Start it explicitly before booting the AVD.
+      - name: Start adb server
+        run: |
+          adb start-server
+          adb wait-for-device || true
+          adb devices
+
       # Animations stay ON: the glass transitions and spring motion are part of
       # what we are testing (§7.4). disable-animations:true would defeat the point.
       - name: Run instrumented tests
