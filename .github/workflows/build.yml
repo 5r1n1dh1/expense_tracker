@@ -45,6 +45,9 @@ jobs:
       - name: Android lint
         run: ./gradlew lintDebug --stacktrace
 
+      - name: Normalise trailing newlines
+        run: ./scripts/ensure-trailing-newline.sh
+
       - name: "Detekt (banned APIs - Log calls, Modifier.blur)"
         run: ./gradlew detekt --stacktrace
 
