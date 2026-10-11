@@ -1,6 +1,5 @@
 package com.srinidhi.kharch.ui.glass
 
-import android.app.WallpaperManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -71,15 +70,18 @@ object Frost {
     fun estimatedBytes(width: Int, height: Int): Int = width * height * BytesPerPixel
 }
 
-/** Where the frosted backdrop's source pixels come from (§8.2). */
+/**
+ * Where the frosted backdrop's source pixels come from (§8.2).
+ *
+ * There is deliberately no wallpaper option. Reading the system wallpaper needs
+ * `READ_WALLPAPER_INTERNAL` (or, worse, `MANAGE_EXTERNAL_STORAGE`), which Kharch
+ * must not ask a user for: it is broad access to personal content for a purely
+ * decorative effect. It also sits badly beside decision P1, where the app's whole
+ * posture is to touch as little of the user's data as possible. The brand
+ * gradient is always available and always looks intentional.
+ */
 enum class FrostSource {
-    /** System wallpaper when the platform exposes one, else the brand gradient. */
-    Auto,
-
-    /** System wallpaper only; degrades to `null` when unavailable (no gradient fallback). */
-    Wallpaper,
-
-    /** The bundled brand gradient drawable. Always available. */
+    /** The bundled brand gradient. The only source, and the only default. */
     BrandGradient,
 }
 
@@ -99,7 +101,7 @@ val LocalFrostedBackdrop = staticCompositionLocalOf<ImageBitmap?> { null }
  * result is cached process-wide, so N glass surfaces cost exactly one build.
  */
 @Composable
-fun rememberFrostedBackdrop(source: FrostSource = FrostSource.Auto): ImageBitmap? {
+fun rememberFrostedBackdrop(source: FrostSource = FrostSource.BrandGradient): ImageBitmap? {
     val context = LocalContext.current.applicationContext
     val configuration = LocalConfiguration.current
     val layout = Triple(source, configuration.screenWidthDp, configuration.screenHeightDp)
@@ -132,7 +134,7 @@ fun rememberFrostedBackdrop(source: FrostSource = FrostSource.Auto): ImageBitmap
 @Composable
 fun FrostedBackdrop(
     modifier: Modifier = Modifier,
-    source: FrostSource = FrostSource.Auto,
+    source: FrostSource = FrostSource.BrandGradient,
     overlay: Color = Color.Transparent,
     content: @Composable BoxScope.() -> Unit = {},
 ) {
@@ -234,9 +236,6 @@ private fun Canvas.drawBackdropSource(context: Context, source: FrostSource, wid
     drawColor(android.graphics.Color.BLACK)
     val drawable = when (source) {
         FrostSource.BrandGradient -> context.drawableOrNull(R.drawable.brand_gradient)
-        FrostSource.Wallpaper -> context.wallpaperDrawableOrNull()
-        FrostSource.Auto -> context.wallpaperDrawableOrNull()
-            ?: context.drawableOrNull(R.drawable.brand_gradient)
     } ?: return
     drawable.setBounds(0, 0, width, height)
     drawable.draw(this)
@@ -244,7 +243,3 @@ private fun Canvas.drawBackdropSource(context: Context, source: FrostSource, wid
 
 private fun Context.drawableOrNull(resId: Int): Drawable? =
     runCatching { getDrawable(resId) }.getOrNull()
-
-/** The system wallpaper, when the platform exposes one. Null is normal. */
-private fun Context.wallpaperDrawableOrNull(): Drawable? =
-    runCatching { WallpaperManager.getInstance(this).fastDrawable }.getOrNull()
