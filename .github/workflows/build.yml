@@ -62,7 +62,10 @@ jobs:
       # optional user-initiated update check.
       - name: No telemetry dependencies (P1)
         run: |
-          if grep -rn "firebase-crashlytics\|firebase-analytics\|firebase-perf" gradle/libs.versions.toml app/build.gradle.kts ; then
+          # Match only real dependency DECLARATIONS (module = / implementation lines),
+          # not the prose in comments, which legitimately names these artifacts.
+          if grep -rnE '(module|alias)\s*=\s*"[^"]*firebase-(crashlytics|analytics|perf)|implementation\(libs\.[a-z.]*(crashlytics|analytics|perf)' \
+               gradle/libs.versions.toml app/build.gradle.kts ; then
             echo "::error::Telemetry dependency present. Decision P1 forbids crash/analytics/performance collection."
             exit 1
           fi
