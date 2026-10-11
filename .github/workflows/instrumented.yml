@@ -63,9 +63,14 @@ jobs:
       # adb daemon on port: 5037"). Start it explicitly before booting the AVD.
       - name: Start adb server
         run: |
-          adb start-server
-          adb wait-for-device || true
-          adb devices
+          # adb is not on PATH by default on the runner image (exit 127 = command
+          # not found). It lives in the SDK's platform-tools directory.
+          export ANDROID_HOME="${ANDROID_HOME:-$HOME/Android/Sdk}"
+          ADB="$ANDROID_HOME/platform-tools/adb"
+          test -x "$ADB" || ADB="$HOME/Android/Sdk/platform-tools/adb"
+          echo "Using adb: $ADB"
+          "$ADB" start-server
+          "$ADB" version
 
       # Animations stay ON: the glass transitions and spring motion are part of
       # what we are testing (§7.4). disable-animations:true would defeat the point.
