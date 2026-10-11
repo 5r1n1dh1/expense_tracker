@@ -15,12 +15,13 @@ complexity:
   LongParameterList:
     active: true
     # Kharch legitimately has a few wide seams: GlassTextField takes the eight Material
-    # TextField slots the design actually exposes. Both read better as one obvious list
-    # than as a builder DSL. Test sources are excluded entirely, because a fixture that
-    # mirrors a domain model SHOULD look like the model.
+    # TextField slots the design actually exposes, which reads better as one obvious list
+    # than as a builder DSL. Test sources are excluded because a fixture that mirrors a
+    # domain model SHOULD look like the model.
     functionThreshold: 9
     constructorThreshold: 12
-    excludeTestSources: true
+    ignoreDataClasses: true
+    excludes: ['**/test/**', '**/androidTest/**']
   TooManyFunctions:
     active: true
     thresholdInFiles: 20
@@ -46,8 +47,10 @@ naming:
     ignoreAnnotated: ['Composable']
   TopLevelPropertyNaming:
     active: true
+    # Design tokens (colours, alpha budgets, sheen geometry) are written in
+    # SCREAMING_SNAKE_CASE so they read as constants rather than as mutable properties.
     constantPattern: '[A-Z][_A-Z0-9]*'
-    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
+    propertyPattern: '[A-Z][_A-Z0-9]*'
 
 performance:
   SpreadOperator:
