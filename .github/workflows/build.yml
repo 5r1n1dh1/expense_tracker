@@ -33,7 +33,11 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
-      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+      # NOTE: android-actions/setup-android is deliberately NOT used. It tries to
+      # sdkmanager-install a package that no longer exists on Google's mirror
+      # ("Failed to find package 'tools'"), failing every run. The GitHub runner
+      # image already ships a full Android SDK, and the Gradle Android plugin
+      # auto-provisions any missing platform/build-tools component.
 
       - name: Unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
