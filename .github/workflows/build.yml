@@ -77,11 +77,16 @@ jobs:
       - name: Assemble release APK
         run: ./gradlew assembleRelease --stacktrace
 
+      # The RELEASE apk is the size users actually download, and it is R8-shrunk,
+      # so that is the gate that matters. The debug apk is unshrunk and carries the
+      # Compose tooling + full symbol tables, so it is reported but not gated.
       - name: APK size gate
         run: |
           DEBUG_SIZE=$(stat -c%s app/build/outputs/apk/debug/app-debug.apk)
-          echo "debug APK: $((DEBUG_SIZE/1024)) KB (budget 13312 KB)"
-          [ "$DEBUG_SIZE" -lt $((13*1024*1024)) ] || { echo "::error::Debug APK exceeds size budget"; exit 1; }
+          RELEASE_SIZE=$(stat -c%s app/build/outputs/apk/release/app-release.apk)
+          echo "debug APK:   $((DEBUG_SIZE/1024)) KB (informational)"
+          echo "release APK: $((RELEASE_SIZE/1024)) KB (budget 8192 KB)"
+          [ "$RELEASE_SIZE" -lt $((8*1024*1024)) ] || { echo "::error::Release APK exceeds size budget"; exit 1; }
 
       # Upload only — never downloaded locally (C2). Inspect with:
       #   gh run view <id>

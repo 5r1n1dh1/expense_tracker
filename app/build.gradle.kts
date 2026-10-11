@@ -150,8 +150,12 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons.extended)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // material-icons-extended is ~20 MB of unused icon vectors. Kharch uses a small,
+    // curated icon set (5.2) so it is deliberately NOT a dependency — the handful of
+    // icons it needs are bundled as vector drawables in res/drawable/.
+    // (R8 would strip the unused ones anyway, but debug builds don't shrink, and the
+    // build/compile time cost is real.)
 
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
@@ -168,10 +172,11 @@ dependencies {
 
     implementation(libs.work.runtime.ktx)
 
-    // Credential Manager (D3: modern Google sign-in, no legacy play-services-auth UI)
+    // Credential Manager (D3: modern Google sign-in). play-services-auth is NOT a
+    // dependency — credentials-play-services-auth pulls only the narrow auth client it
+    // needs, whereas the legacy play-services-auth artifact drags in the whole GMS stack.
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services)
-    implementation(libs.play.services.auth)
 
     // Firebase — Auth + Firestore ONLY (Spark / free tier, D2)
     implementation(platform(libs.firebase.bom))
