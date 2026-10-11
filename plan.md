@@ -1068,28 +1068,58 @@ expense_tracker/
 └── plan.md
 ```
 
-### 11.2 Version catalogue (pinned; verify exact values against release notes at kickoff)
+### 11.2 Version catalogue — VERIFIED against live repos and CI
 
-```toml
-[versions]
-agp = "8.x.y"           # latest stable
-kotlin = "2.2.x"
-ksp = "2.2.x-1.0.x"
-composeBom = "<latest>"
-hilt = "2.5x"
-room = "2.7.x"
-glance = "1.1.1+"
-firebaseBom = "<latest>"
-credential = "1.3+"
-navigationCompose = "2.8+"
-workManager = "2.10+"
-coroutines = "1.9+"
-turbine = "1.2.x"
-androidxTest = "<latest>"
-```
+`gradle/libs.versions.toml` is the single source of truth. The values below were verified against
+the live Maven/Google repositories and then **proved by a green CI build**. Do not bump one
+without the others.
 
-`androidx.compose:compose-bom` is used so all Compose artifacts move together and stay
-binary-compatible — the single most common source of "works on my machine" Compose breakage.
+| Component | Version | Why this value |
+|---|---|---|
+| **AGP** | 9.3.1 | Every AGP 9.x (9.3.1 / 9.4.0 / 9.4.1) bundles Kotlin **2.2.10**, so 9.3.1 is the floor that works with the Firebase BoM below. |
+| **Gradle** | 9.5.0 | AGP 9.3 minimum. |
+| **Kotlin** | 2.2.10 | AGP 9.x has **built-in Kotlin** — the `kotlin-android` plugin is removed, and applying it is now a hard error. AGP bundles the compiler. |
+| **KSP** | 2.2.10-2.0.2 | Must match AGP's bundled Kotlin exactly. |
+| **JDK** | 17 | AGP 9.x minimum. |
+| **compileSdk** | **37** | Current AndroidX (Compose 1.12.x, navigation 2.10.x, hilt-nav 1.4.0) requires API 37 — confirmed by the AAR metadata check. |
+| **targetSdk** | 36 | Google Play requirement since 31 Aug 2026. `compileSdk > targetSdk` is normal and correct. API 37 targeting becomes mandatory ~Aug 2027. |
+| **minSdk** | 29 | §8.3's pre-baked backdrop gives a credible frosted look below API 31 without extra deps. |
+| **Firebase BoM** | **34.19.0** | BoM 35.0.0 ships `firebase-auth:25.0.0`, compiled with **Kotlin 2.4.0** — unreadable by AGP's 2.2.10 compiler. BoM 34.19.0 (auth 24.2.0, firestore 26.6.0) targets the Kotlin 2.1/2.2 era. Revisit when AGP bundles Kotlin ≥ 2.4. |
+| Compose BOM | 2026.09.00 | Keeps every Compose artifact binary-compatible. |
+| Room | 2.8.5 | `room-compiler` via KSP; schemas exported to `app/schemas/`. |
+| Hilt | 2.60.1 | KSP-based. |
+| Glance | 1.2.0 | Widget. |
+| Credential Manager | 1.6.0 | Google sign-in; `credentials-play-services-auth` only. |
+| Firebase artifacts | base, **not `-ktx`** | auth 25.x / firestore 27.x merged the `-ktx` artifacts into the base artifacts; the base ships the Kotlin extensions. |
+
+**Known-good build flags** (each was learned from a real CI failure):
+
+- `android.builtInKotlin=true` — explicit; AGP 9's default.
+- `android.disallowKotlinSourceSets=false` — KSP still registers generated sources via
+  `kotlin.sourceSets`, which built-in Kotlin forbids. AGP documents this as the supported
+  escape hatch for third-party plugins that have not migrated.
+- `org.gradle.configuration-cache=false` — AGP 9.3's `ProcessNavigationXmlTask` trips a
+  configuration-cache serialisation error. The Gradle **build** cache still provides most of the
+  speed win; revisit in Phase 10.
+- Dependency verification is **bootstrapped, then enforced**: `strict` mode fails when
+  `verification-metadata.xml` is absent, so Phase 0 generates the file and Phase 10 flips
+  `org.gradle.dependency.verification=strict` (§14.6).
+- Detekt needs `detektPlugins(libs.detekt.formatting)` or the `formatting:` ruleset is rejected
+  as an unknown config property.
+- Detekt's `formatting` ruleset fails on a missing trailing newline; CI runs
+  `scripts/ensure-trailing-newline.sh` before detekt so whitespace never masks real findings.
+
+**Dependencies deliberately omitted, and why:**
+
+| Omitted | Reason |
+|---|---|
+| `material-icons-extended` | ≈20 MB of unused vectors; a small curated icon set ships as vector drawables instead. |
+| `compose.ui.tooling` | Developer-preview tooling, not needed to build or run the app. |
+| `play-services-auth` | Drags in the whole GMS stack; `credentials-play-services-auth` pulls only what Credential Manager needs. |
+| `firebase-crashlytics` / `-analytics` / `-perf` | Forbidden by decision **P1**. A CI grep guard fails the build if a telemetry SDK is ever declared. |
+
+**Measured sizes (from CI):** release APK **7.6 MB** (R8 + resource shrinking), within the 8 MB
+gate. The debug APK is unshrunk and intentionally not size-gated.
 
 ### 11.3 Manifest essentials
 
@@ -1790,6 +1820,34 @@ Each phase ends with a **green CI run**; nothing lands broken.
 **Total: ~19–20 working days.** Phases 0–7 deliver the app; 8 polishes it; **9–11 are what make it
 production-grade** — portability and privacy (9), CI-enforced quality gates (10), and the release
 path (11). See §18.11 for the effort breakdown of the hardening layer.
+
+---
+
+### 15.1 Phase 0 status — COMPLETE and CI-verified
+
+Phase 0 shipped in commits `6bc7121`…`2ced778` and is **green on both workflows**. Everything
+is built and tested only in GitHub Actions; nothing was built locally and no APK was downloaded.
+
+| Gate | Result |
+|---|---|
+| `build.yml` — unit tests | ✅ pass |
+| `build.yml` — Android lint | ✅ pass |
+| `build.yml` — detekt (banned APIs) | ✅ pass |
+| `build.yml` — P9 no-destructive-migration guard | ✅ pass |
+| `build.yml` — P1 no-telemetry guard | ✅ pass (verified to catch an injected dep) |
+| `build.yml` — assembleDebug + assembleRelease (R8) | ✅ pass |
+| `build.yml` — APK size gate (release ≤ 8 MB) | ✅ pass — **7.6 MB** |
+| `instrumented.yml` — API 34 / 35 / 36 emulators | ✅ pass (2 tests each) |
+
+Verified during Phase 0 and worth keeping: the Gradle wrapper JAR's SHA-256 was checked against
+Gradle's published `release-checksums` page; every GitHub Action is pinned to an immutable commit
+SHA; and the P1 telemetry guard was tested to confirm it actually fails on a real violation.
+
+**Notes for later phases:**
+- The emulator matrix is API **34/35/36**. API 37 has no published `x86_64` system image yet
+  (still preview), so the AVD cannot boot; it is still our `compileSdk`.
+- AndroidX Test Orchestrator is off for now (it caused "0 tests" discovery failures on this AGP +
+  emulator combo). It should be switched on deliberately in Phase 10, once the suite is real.
 
 ---
 
