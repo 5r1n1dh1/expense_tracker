@@ -32,7 +32,13 @@ kotlin = "2.2.10"
 ksp = "2.2.10-2.0.2"
 
 # SDK
-compileSdk = "36"
+# compileSdk 37: current AndroidX (Compose 1.12.x, navigation 2.10.x,
+#   hilt-navigation 1.4.0) requires compiling against API 37 — confirmed by the
+#   AAR metadata check. AGP 9.3 supports up to API 37.
+# targetSdk 36: Google Play requires API 36 for submissions since 31 Aug 2026.
+#   compileSdk may exceed targetSdk; that is normal and correct.
+#   (API 37 targeting becomes mandatory around Aug 2027 — revisit then.)
+compileSdk = "37"
 minSdk = "29"
 targetSdk = "36"
 
