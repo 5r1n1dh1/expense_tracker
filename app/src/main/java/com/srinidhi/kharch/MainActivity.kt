@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             KharchTheme {
-                KharchApp()
+                KharchRoot()
             }
         }
     }
