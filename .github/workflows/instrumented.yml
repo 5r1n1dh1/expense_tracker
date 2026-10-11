@@ -20,8 +20,12 @@ jobs:
         # No `profile:` — the valid AVD hardware-profile ids differ between emulator
         # images and a wrong name fails the whole job ("No device found matching
         # --device ..."). Letting the action pick the default is robust across images.
+        #
+        # NOTE: every matrix value must be an array (or an `include:` mapping). A bare
+        # scalar such as `target: google_apis` is rejected at parse time with
+        # "Unexpected value 'google_apis'", which fails the whole run with zero jobs.
         api-level: [34, 35, 36, 37]
-        target: google_apis
+        target: [google_apis]
     runs-on: ubuntu-latest
     timeout-minutes: 75
 
