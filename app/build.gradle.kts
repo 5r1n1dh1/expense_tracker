@@ -252,7 +252,6 @@ tasks.withType<Test>().configureEach {
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         showStackTraces = true
         showCauses = true
-        showExceptionMessage = true
     }
 
     // Screenshot/Paparazzi tests capture to build/; keep them on disk for CI artifacts.
