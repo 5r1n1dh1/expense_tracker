@@ -108,7 +108,12 @@ android {
         // test-runner retry mechanism. CI-flakiness mitigation is instead handled by
         // the `fail-fast: false` matrix and AndroidX Test Orchestrator (see
         // instrumented.yml and §16). Animations stay ON so the glass motion is tested.
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        // NOTE: AndroidX Test Orchestrator is intentionally NOT enabled yet. With it,
+        // `connectedDebugAndroidTest` reports "Test run failed to complete. No test
+        // results" / "Starting 0 tests" on this AGP + emulator setup. Orchestrator gives
+        // per-test isolation, which we want before release (Phase 10), but it must be
+        // switched on deliberately once the suite is populated and verified, not left to
+        // break the very first green run.
         animationsDisabled = false
     }
 
@@ -211,6 +216,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.monitor)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
