@@ -55,7 +55,17 @@ class MoneyFuzzTest {
         }
 
         assertEquals(BigDecimal.valueOf(longNet, 2), decimalNet)
-        assertEquals(decimalNet.signum(), longNet.signum())
+        // Compare signs explicitly rather than via signum(), so the assertion does not
+        // depend on an extension overload and states the intent in one line.
+        assertEquals(
+            "Long and BigDecimal must agree on the sign of the net",
+            decimalNet.compareTo(BigDecimal.ZERO),
+            when {
+                longNet > 0L -> 1
+                longNet < 0L -> -1
+                else -> 0
+            },
+        )
     }
 
     private companion object {
