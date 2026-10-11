@@ -1,0 +1,116 @@
+config:
+  validation: true
+  warningsAsErrors: false
+  excludes: '**/build/**'
+
+build:
+  maxIssues: 0
+
+console-reports:
+  active: true
+
+complexity:
+  LongMethod:
+    active: true
+    threshold: 120
+  LongParameterList:
+    active: true
+    functionThreshold: 8
+    constructorThreshold: 10
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 20
+    thresholdInClasses: 20
+    thresholdInObjects: 20
+    thresholdInEnums: 12
+    ignoreAnnotated: ['Composable']
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 20
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: true
+  SwallowedException:
+    active: true
+  TooGenericExceptionThrown:
+    active: true
+
+naming:
+  FunctionNaming:
+    active: true
+    ignoreAnnotated: ['Composable']
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '[A-Z][_A-Z0-9]*'
+    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
+
+performance:
+  SpreadOperator:
+    active: false
+  UnnecessaryPartOfBinaryExpression:
+    active: true
+
+potential-bugs:
+  active: true
+
+style:
+  MagicNumber:
+    active: false
+  ReturnCount:
+    active: true
+    max: 6
+  UnusedPrivateMember:
+    active: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+  WildcardImport:
+    active: true
+  ForbiddenComment:
+    active: true
+    comments:
+      - reason: 'TODO markers left in a "production-grade" codebase'
+        value: 'TODO:'
+      - reason: 'FIXME markers left in a "production-grade" codebase'
+        value: 'FIXME:'
+  ForbiddenMethodCall:
+    active: true
+    # P1 (§18.1) / §18.3: financial data must never reach Logcat.
+    # proguard-rules.pro also makes these strip in release; this makes it a BUILD FAILURE.
+    methods:
+      - reason: 'P1: never log user financial data to Logcat'
+        value: 'android.util.Log.v'
+      - reason: 'P1: never log user financial data to Logcat'
+        value: 'android.util.Log.d'
+      - reason: 'P1: never log user financial data to Logcat'
+        value: 'android.util.Log.i'
+      - reason: 'P1: never log user financial data to Logcat'
+        value: 'android.util.Log.w'
+      - reason: 'P1: never log user financial data to Logcat'
+        value: 'android.util.Log.e'
+      - reason: 'P1: never log user financial data to Logcat'
+        value: 'android.util.Log.println'
+      - reason: '§8.1: live backdrop blur is banned — use the pre-baked frosted backdrop'
+        value: 'androidx.compose.ui.draw.blur'
+
+formatting:
+  active: true
+  android: true
+  autoCorrect: true
+  MaximumLineLength:
+    active: true
+    maxLineLength: 120
+  ArgumentListWrapping:
+    active: false
+  FunctionNaming:
+    active: false
+
+comments:
+  active: true
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
+  UndocumentedPublicProperty:
+    active: false

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  P5 (§18.4): Android Auto Backup is opted out. A financial ledger must not be silently
+  uploaded to Google's backup servers. Users export explicitly via Settings → Data.
+
+  Android 12+ split backup into two independent rule sets, so BOTH are defined and BOTH
+  exclude everything — `allowBackup="false"` alone is not sufficient on all OEMs.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="file" />
+        <exclude domain="external" />
+        <exclude domain="device_root" />
+        <exclude domain="device_database" />
+        <exclude domain="device_sharedpref" />
+        <exclude domain="device_file" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="file" />
+        <exclude domain="external" />
+        <exclude domain="device_root" />
+        <exclude domain="device_database" />
+        <exclude domain="device_sharedpref" />
+        <exclude domain="device_file" />
+    </device-transfer>
+</data-extraction-rules>

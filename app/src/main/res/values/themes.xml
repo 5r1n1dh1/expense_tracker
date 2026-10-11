@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      Edge-to-edge is MANDATORY for targetSdk 35+ (§11.3). The activity draws its
+      own scrim so a translucent window (QuickAddActivity) can composite over
+      whatever is behind it.
+    -->
+    <style name="Theme.Kharch" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+
+    <style name="Theme.Kharch.Starting" parent="Theme.Kharch">
+        <item name="android:windowBackground">@drawable/brand_gradient</item>
+    </style>
+
+    <!--
+      QuickAddActivity: translucent, edge-to-edge, own scrim. backgroundDimEnabled=false
+      because we draw a stronger, design-consistent scrim ourselves (§10, §7.2G).
+    -->
+    <style name="Theme.Kharch.Translucent" parent="Theme.Kharch">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Activity</item>
+    </style>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand gradient: indigo → teal (§8.5). Also the fallback when dynamic
+         colour is unavailable or the user picks "Brand theme". -->
+    <color name="brand_indigo">#FF4F5DD3</color>
+    <color name="brand_teal">#FF2BB3A3</color>
+    <color name="glass_scrim_dark">#F20B1020</color>
+    <color name="glass_scrim_light">#E6FFFFFF</color>
+</resources>

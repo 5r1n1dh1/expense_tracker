@@ -1,0 +1,31 @@
+# P8 — supply-chain hardening.
+# All third-party actions are pinned to immutable 40-char commit SHAs (see
+# config/actions/versions.env for the tag→SHA map and why this matters).
+version: 2
+
+updates:
+  # GitHub Actions themselves — keeps the SHA pins current.
+  - package-ecosystem: github-actions
+    directory: '/.github/workflows'
+    schedule:
+      interval: weekly
+    labels: [dependencies, ci]
+    commit-message:
+      prefix: 'ci'
+
+  # Gradle version catalogue (libs.versions.toml).
+  - package-ecosystem: gradle
+    directory: '/'
+    schedule:
+      interval: weekly
+    labels: [dependencies, android]
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'build(deps)'
+
+  # Firebase emulator CLI for the rules tests (§14.4).
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: monthly
+    labels: [dependencies, ci]
