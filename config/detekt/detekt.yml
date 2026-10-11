@@ -47,10 +47,12 @@ naming:
     ignoreAnnotated: ['Composable']
   TopLevelPropertyNaming:
     active: true
-    # Design tokens (colours, alpha budgets, sheen geometry) are written in
-    # SCREAMING_SNAKE_CASE so they read as constants rather than as mutable properties.
+    # constantPattern keeps SCREAMING_SNAKE_CASE for genuine constants. propertyPattern
+    # stays permissive (detekt's default) so idiomatic PascalCase top-level vals are
+    # allowed -- that is how the theme objects (KharchTypography, KharchShapes) and
+    # CompositionLocals (LocalHaptics) are named, and those are names, not constants.
     constantPattern: '[A-Z][_A-Z0-9]*'
-    propertyPattern: '[A-Z][_A-Z0-9]*'
+    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
 
 performance:
   SpreadOperator:
