@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kharch</string>
+
+    <!--
+      Credential Manager needs the *web* OAuth client id — Firebase console →
+      Authentication → Sign-in method → Google → "Web SDK configuration" →
+      "Web client ID". It is NOT the Android client id, and it is not a secret
+      (access is gated by package name + signing SHA, D3).
+
+      The google-services Gradle plugin generates this resource from
+      google-services.json. The file committed today is the PLACEHOLDER from
+      app/google-services.json.README.md, whose oauth_client list is empty, so
+      the value is declared here instead. The main source set wins over a
+      generated resource, so once a real project is connected BOTH must agree:
+      update strings.xml and google-services.json together.
+    -->
+    <string name="default_web_client_id" translatable="false">000000000000-0000000000000000000000000000000aa.apps.googleusercontent.com</string>
 </resources>

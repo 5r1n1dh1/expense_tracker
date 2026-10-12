@@ -49,6 +49,7 @@ data class Settings(
     val glassIntensity: GlassIntensityPreference = GlassIntensityPreference.EXAGGERATED,
     val highContrast: Boolean = false,
     val reduceMotion: Boolean = false,
+    val hapticsEnabled: Boolean = true,
     val activeAuthUid: String? = null,
     val workspaceId: String? = null,
 )
@@ -58,6 +59,7 @@ private object Keys {
     val GLASS_INTENSITY: Preferences.Key<String> = stringPreferencesKey("glass_intensity")
     val HIGH_CONTRAST: Preferences.Key<Boolean> = booleanPreferencesKey("high_contrast")
     val REDUCE_MOTION: Preferences.Key<Boolean> = booleanPreferencesKey("reduce_motion")
+    val HAPTICS_ENABLED: Preferences.Key<Boolean> = booleanPreferencesKey("haptics_enabled")
     val ACTIVE_AUTH_UID: Preferences.Key<String> = stringPreferencesKey("active_auth_uid")
     val WORKSPACE_ID: Preferences.Key<String> = stringPreferencesKey("workspace_id")
 }
@@ -117,6 +119,17 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         dataStore.edit { preferences -> preferences[Keys.REDUCE_MOTION] = enabled }
     }
 
+    /**
+     * Master switch for haptic feedback.
+     *
+     * Read by the app root, which feeds it to `ProvideHaptics` in `KharchRoot`. Kept on
+     * by default so the keypad feels physical, and respected by the system haptics
+     * setting on top of this (Android can still suppress it globally).
+     */
+    suspend fun setHapticsEnabled(enabled: Boolean) {
+        dataStore.edit { preferences -> preferences[Keys.HAPTICS_ENABLED] = enabled }
+    }
+
     /** Records the signed-in identity and the ledger it resolves to. */
     suspend fun setActiveAuth(uid: String, workspaceId: String) {
         dataStore.edit { preferences ->
@@ -142,6 +155,7 @@ class SettingsStore(private val dataStore: DataStore<Preferences>) {
         glassIntensity = this[Keys.GLASS_INTENSITY].toPreference(GlassIntensityPreference.EXAGGERATED),
         highContrast = this[Keys.HIGH_CONTRAST] ?: false,
         reduceMotion = this[Keys.REDUCE_MOTION] ?: false,
+        hapticsEnabled = this[Keys.HAPTICS_ENABLED] ?: true,
         activeAuthUid = this[Keys.ACTIVE_AUTH_UID],
         workspaceId = this[Keys.WORKSPACE_ID],
     )
