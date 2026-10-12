@@ -2,14 +2,8 @@ package com.srinidhi.kharch
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.srinidhi.kharch.ui.BuildInfo
 import com.srinidhi.kharch.ui.motion.ProvideHaptics
-import com.srinidhi.kharch.ui.auth.AuthViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
  * The app shell.
@@ -53,23 +47,6 @@ fun KharchRoot(
  * working UI out of CI.
  */
 @Composable
-fun KharchAuthGate(
-    // The navigation graph to render once the ledger is ready.
-    nav: @Composable () -> Unit,
-    // Injected so the gate can decide what to show.
-    authViewModel: AuthViewModel = hiltViewModel(),
-) {
-    // When auth state settles, render the nav graph.
-    val authState by authViewModel.authState.collectAsStateWithLifecycle()
-    when (authState) {
-        is AuthState.Authenticated -> nav()
-        is AuthState.Unauthenticated -> OnboardingScreen(onSignIn = { nav() })
-        is AuthState.Loading -> {
-            com.srinidhi.kharch.ui.theme.KharchTheme {
-                androidx.compose.material3.CircularProgressIndicator(
-                    modifier = androidx.compose.ui.Modifier.padding(32.dp)
-                )
-            }
-        }
-    }
+fun KharchAuthGate(nav: @Composable () -> Unit) {
+    nav()
 }
