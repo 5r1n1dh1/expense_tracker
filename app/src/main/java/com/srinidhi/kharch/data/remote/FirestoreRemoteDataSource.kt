@@ -234,7 +234,7 @@ class FirestoreRemoteDataSource @Inject constructor(
                 val reference = FirestoreLayout.workspace(firestore, workspaceId)
                 val snapshot = transaction.get(reference)
                 if (!snapshot.exists()) throw MissingWorkspaceException(workspaceId)
-                val remaining = snapshot.readMemberUids() - uid
+                val remaining = FirestoreMapper.readMemberUids(snapshot) - uid
                 if (remaining.isEmpty()) throw LastMemberException(uid)
                 transaction.update(reference, FirestoreLayout.FIELD_MEMBER_UIDS, remaining)
             }.awaitTask()
@@ -249,18 +249,33 @@ class FirestoreRemoteDataSource @Inject constructor(
      * only delete the app ever issues directly is that sweep (plan §6.4).
      */
     suspend fun eraseLedger(workspaceId: String) {
-        val deletedAt = clock.nowMillis()
-        var expenses: List<ExpenseDto> = emptyList()
         runCatching {
-            expenses = drainExpenses(workspaceId).map { it.copy(deletedAt = deletedAt, updatedAt = deletedAt) }
-        }.getOrElse { failure -> throw failure.toSyncException() }
-        pushExpenses(workspaceId, expenses)
+            val deletedAt = clock.nowMillis()
+            var expenses: List<ExpenseDto> = emptyList()
+            var cursor = 0L
+            while (expenses.size < DRAIN_CEILING) {
+                val page = pullExpenses(workspaceId, cursor, MAX_PAGE_DOCS)
+                if (page.isEmpty()) break
+                expenses += page
+                cursor = FirestoreMapper.latestUpdatedAt(page)
+                if (page.size < MAX_PAGE_DOCS) break
+            }
+            pushExpenses(workspaceId, expenses.map { it.copy(deletedAt = deletedAt, updatedAt = deletedAt) })
 
-        var categories: List<CategoryDto> = emptyList()
-        runCatching {
-            categories = drainCategories(workspaceId).map { it.copy(deletedAt = deletedAt, updatedAt = deletedAt) }
+            var categories: List<CategoryDto> = emptyList()
+            var categoryCursor = 0L
+            while (categories.size < DRAIN_CEILING) {
+                val page = pullCategories(workspaceId, categoryCursor, MAX_PAGE_DOCS)
+                if (page.isEmpty()) break
+                categories += page
+                categoryCursor = FirestoreMapper.latestCategoryUpdatedAt(page)
+                if (page.size < MAX_PAGE_DOCS) break
+            }
+            pushCategories(
+                workspaceId,
+                categories.map { it.copy(deletedAt = deletedAt, updatedAt = deletedAt) },
+            )
         }.getOrElse { failure -> throw failure.toSyncException() }
-        pushCategories(workspaceId, categories)
     }
 
     // ── Internals ─────────────────────────────────────────────────────────────
@@ -273,38 +288,6 @@ class FirestoreRemoteDataSource @Inject constructor(
         .whereGreaterThan(FirestoreLayout.FIELD_UPDATED_AT, afterUpdatedAt)
         .orderBy(FirestoreLayout.FIELD_UPDATED_AT, Query.Direction.ASCENDING)
         .limit(limit.toLong())
-
-    /** Every expense, page by page. Only used by erasure, which is rare and user-initiated. */
-    private suspend fun drainExpenses(workspaceId: String): List<ExpenseDto> {
-        val everything = mutableListOf<ExpenseDto>()
-        while (everything.size < DRAIN_CEILING) {
-            val page = pullExpenses(
-                workspaceId = workspaceId,
-                afterUpdatedAt = FirestoreMapper.latestUpdatedAt(everything),
-                limit = MAX_PAGE_DOCS,
-            )
-            if (page.isEmpty()) break
-            everything += page
-            if (page.size < MAX_PAGE_DOCS) break
-        }
-        return everything
-    }
-
-    /** Every category, page by page. See [drainExpenses] for why this is not a listener. */
-    private suspend fun drainCategories(workspaceId: String): List<CategoryDto> {
-        val everything = mutableListOf<CategoryDto>()
-        while (everything.size < DRAIN_CEILING) {
-            val page = pullCategories(
-                workspaceId = workspaceId,
-                afterUpdatedAt = FirestoreMapper.latestCategoryUpdatedAt(everything),
-                limit = MAX_PAGE_DOCS,
-            )
-            if (page.isEmpty()) break
-            everything += page
-            if (page.size < MAX_PAGE_DOCS) break
-        }
-        return everything
-    }
 
     companion object {
         /**

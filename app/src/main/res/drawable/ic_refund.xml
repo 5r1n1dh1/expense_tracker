@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Return arrow: the refund glyph (D5).
+
+  Rendered in the credit accent next to a −₹ amount, so a refund is never identified by
+  colour alone — the glyph and the sign both say "money came back".
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -6,8 +12,5 @@
     android:viewportHeight="24">
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M12,3C7.03,3 3,7.03 3,12H6L4.6,14.4L3.2,12H6C6,8.13 9.13,5 12,5V8L16,4.5L12,1V3Z" />
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M12,21C16.97,21 21,16.97 21,12H18L19.4,9.6L20.8,12H18C18,15.87 14.87,19 12,19V16L8,19.5L12,23V21 Z" />
+        android:pathData="M12,5V1L7,6l5,5V7c3.31,0 6,2.69 6,6s-2.69,6 -6,6 -6,-2.69 -6,-6H4c0,4.42 3.58,8 8,8s8,-3.58 8,-8 -3.58,-8 -8,-8z" />
 </vector>

@@ -45,8 +45,14 @@ import kotlinx.coroutines.delay
  * never quietly clamp a net-negative month to zero or rescale it to fill the track.
  */
 
-/** Height of the bar track. The empty state is sized to fit exactly this height. */
-internal val CHART_TRACK_HEIGHT = 236.dp
+/**
+ * Height of the bar track.
+ *
+ * The empty state's orb, headline, subline and call to action are sized to fit inside
+ * exactly this height, so the populated chart and the empty orb occupy identical bounds
+ * and nothing reflows when the first expense lands (D9).
+ */
+internal val CHART_TRACK_HEIGHT = 260.dp
 
 /** Bar width, as a fraction of its slot. */
 private const val BAR_WIDTH = 0.46f
@@ -95,7 +101,7 @@ fun MonthlyBarChart(
     val formatter = InrFormatter.Default
 
     Column(modifier = modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.fillMaxWidth().height(CHART_TRACK_HEIGHT)) {
+        Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
             slots.forEach { slot ->
                 Bar(
                     slot = slot,
@@ -164,7 +170,7 @@ private fun Bar(
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawTrack(axis, palette)
-            drawBar(slot, axis, palette, strokePx, reveal.value)
+            drawBar(target, slot, palette, strokePx, reveal.value, axis)
         }
     }
 }
@@ -210,13 +216,13 @@ private fun DrawScope.drawTrack(axis: ChartAxis, palette: BarPalette) {
 
 /** The bar itself, its peak glow, its selection highlight and its current-month dot. */
 private fun DrawScope.drawBar(
+    target: BarPlacement,
     slot: BarSlot,
-    axis: ChartAxis,
     palette: BarPalette,
     strokePx: Float,
     reveal: Float,
+    axis: ChartAxis,
 ) {
-    val target = BarChartMath.placement(slot.signedPermille, axis)
     val height = target.height * reveal
     if (height <= 0f) return
 
@@ -256,11 +262,16 @@ private fun DrawScope.drawBar(
 
     if (slot.isCurrentMonth) {
         val dot = size.width * CURRENT_MONTH_DOT
-        val centre = axis.baseline * size.height
+        val lowest = size.height - dot
+        val centre = if (lowest > dot) {
+            (axis.baseline * size.height).coerceIn(dot, lowest)
+        } else {
+            size.height / 2f
+        }
         drawCircle(
             color = palette.dot,
             radius = dot,
-            center = Offset(size.width / 2f, centre.coerceIn(dot, size.height - dot)),
+            center = Offset(size.width / 2f, centre),
         )
     }
 }

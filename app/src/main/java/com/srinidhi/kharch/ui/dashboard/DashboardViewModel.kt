@@ -9,7 +9,6 @@ import com.srinidhi.kharch.core.time.SystemClock
 import com.srinidhi.kharch.domain.LedgerQuery
 import com.srinidhi.kharch.domain.dashboard.GetMonthlyBreakdown
 import com.srinidhi.kharch.domain.dashboard.GetYearlyDashboard
-import com.srinidhi.kharch.domain.dashboard.YearDashboard
 import com.srinidhi.kharch.domain.todayIn
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -140,7 +139,3 @@ class DashboardViewModel(
         const val STOP_TIMEOUT_MS = 5_000L
     }
 }
-
-/** The ViewModel's year's aggregate for an empty ledger: twelve zero bars, one shared scale. */
-internal fun emptyDashboard(year: Int): YearDashboard =
-    GetYearlyDashboard().calculate(expenses = emptyList(), year = year, today = LocalDate.of(year, 1, 1))

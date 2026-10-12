@@ -32,3 +32,16 @@
 # It deliberately does NOT depend on Crashlytics / Analytics / Performance Monitoring
 # (decision P1). A CI guard (`build.yml` → "No telemetry dependencies") fails the build
 # if a telemetry SDK is ever added.
+## Update 2026-10-12 — the debug client
+
+Applying `com.google.gms.google-services` surfaced a real gap: the debug variant's
+`applicationIdSuffix = ".debug"` means its `applicationId` is
+`com.srinidhi.kharch.debug`, and the plugin **fails the build** unless
+google-services.json has a client for that id too:
+
+    No matching client found for package name 'com.srinidhi.kharch.debug'
+
+So the placeholder now carries two clients. When you replace it with the real file from
+the Firebase console, register **both** applications there and keep both clients in the
+downloaded JSON — the debug one is what runs every CI build, an emulator test, and any
+`assembleDebug` you do locally.

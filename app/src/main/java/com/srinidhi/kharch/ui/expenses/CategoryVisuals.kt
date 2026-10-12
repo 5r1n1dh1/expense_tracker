@@ -122,10 +122,6 @@ private fun tintBase(glass: GlassColors, index: Int): Color = when (index) {
     else -> glass.expenseAccentAlt
 }
 
-private const val TINT_BASES_SIZE: Int = 4
-
-private const val TINT_SLOT_COUNT: Int = 12
-
 /**
  * A category pill: the glyph in a tinted glass chip, then the name.
  *
