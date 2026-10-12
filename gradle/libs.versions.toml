@@ -62,7 +62,7 @@ datastore = "1.2.1"
 work = "2.12.0"
 
 # Sign-in
-credentials = "1.6.0"
+credentials = "1.7.0"
 playServicesAuth = "22.0.0"
 
 # Firebase (Spark plan — free, no billing account)
