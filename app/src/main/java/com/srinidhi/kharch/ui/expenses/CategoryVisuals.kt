@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -126,12 +126,13 @@ private fun tintBase(glass: GlassColors, index: Int): Color = when (index) {
  * A category pill: the glyph in a tinted glass chip, then the name.
  *
  * Used by the Add sheet (single-select) and the filter sheet (multi-select); the caller decides
- * what "selected" looks like through [selected], and the chip never renders a selected state by
- * colour alone — the glyph chip gains a solid tint, which is a shape change as much as a colour
- * one.
+ * how selection is announced through [selectionRole] — `Role.RadioButton` for the Add sheet's
+ * one-of-many, `Role.Checkbox` for the filter's any-of-many. Selection is never expressed by the
+ * tint alone either way: the glyph chip's wash strengthens, which reads as a change of state
+ * without depending on hue discrimination.
  *
  * @param selected drives the tint strength.
- * @param onClick fired on tap.
+ * @param onClick fired on tap, preceded by a [KharchHaptic.Selection].
  * @param testTag stable tag for tests; omit for decorative uses.
  */
 @Composable
@@ -140,6 +141,7 @@ fun CategoryChip(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    selectionRole: Role = Role.RadioButton,
     testTag: String? = null,
 ) {
     val glass = currentGlassTheme()
@@ -153,7 +155,7 @@ fun CategoryChip(
     GlassSurface(
         modifier = modifier
             .heightIn(min = CHIP_MIN_HEIGHT)
-            .selectable(selected = selected, role = Role.RadioButton) {
+            .selectable(selected = selected, role = selectionRole) {
                 haptics.perform(KharchHaptic.Selection)
                 onClick()
             }

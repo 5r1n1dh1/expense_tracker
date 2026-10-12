@@ -43,12 +43,26 @@ interface RemoteLedger {
         limit: Int,
     ): List<CategoryDto>
 
-    /** The next page of **tombstones** updated after [afterUpdatedAt], for the 30-day sweep. */
-    suspend fun pullTombstones(
+    /**
+     * Tombstones whose `deletedAt` precedes [deletedBeforeMillis], oldest first.
+     *
+     * Queries by `deletedAt` rather than by the sync watermark, and that difference is the
+     * whole point: an expired tombstone's `updatedAt` is far behind the watermark, so a
+     * watermark pull would never return it and would never clean it either. This is what the
+     * 30-day sweep reads.
+     */
+    suspend fun pullExpiredTombstones(
         workspaceId: String,
-        afterUpdatedAt: Long,
+        deletedBeforeMillis: Long,
         limit: Int,
     ): List<ExpenseDto>
+
+    /** The category half of [pullExpiredTombstones]; a soft-deleted category is a tombstone too. */
+    suspend fun pullExpiredTombstonedCategories(
+        workspaceId: String,
+        deletedBeforeMillis: Long,
+        limit: Int,
+    ): List<CategoryDto>
 
     /**
      * Writes [dtos] in Firestore batches of at most [FirestoreRemoteDataSource.MAX_BATCH_OPS].

@@ -1,7 +1,6 @@
 package com.srinidhi.kharch.ui.dashboard
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.snap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

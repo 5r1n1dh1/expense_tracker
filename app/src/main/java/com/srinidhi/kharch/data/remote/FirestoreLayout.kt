@@ -79,4 +79,6 @@ object FirestoreLayout {
     const val FIELD_LAST_PUSH_AT: String = "lastPushAt"
     const val FIELD_LAST_SWEEP_AT: String = "lastSweepAt"
     const val FIELD_LAST_SYNC_ERROR: String = "lastSyncError"
+    const val FIELD_LAST_PUSH_AT: String = "lastPushAt"
+    const val FIELD_LAST_CATEGORY_PUSH_AT: String = "lastCategoryPushAt"
 }

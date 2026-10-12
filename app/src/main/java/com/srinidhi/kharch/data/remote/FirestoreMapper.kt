@@ -211,6 +211,7 @@ object FirestoreMapper {
     fun SyncMetaDto.toMap(): Map<String, Any?> = mapOf(
         FirestoreLayout.FIELD_LAST_PULLED_AT to lastPulledAt,
         FirestoreLayout.FIELD_LAST_PUSH_AT to lastPushAt,
+        FirestoreLayout.FIELD_LAST_CATEGORY_PUSH_AT to lastCategoryPushAt,
         FirestoreLayout.FIELD_LAST_SWEEP_AT to lastSweepAt,
         FirestoreLayout.FIELD_LAST_SYNC_ERROR to lastSyncError,
     )
@@ -219,11 +220,13 @@ object FirestoreMapper {
      * Reads the meta document back.
      *
      * Unknown fields are ignored rather than rejected: this document is a free-form record of
-     * sync bookkeeping, so a future field must not make a current build refuse to sync.
+     * sync bookkeeping, so a field written by a newer build must not stop a current one from
+     * syncing — and a missing one falls back to "pull everything", which is always safe.
      */
     fun mapToSyncMetaDto(fields: Map<String, Any?>): SyncMetaDto = SyncMetaDto(
         lastPulledAt = fields[FirestoreLayout.FIELD_LAST_PULLED_AT] as? Long ?: 0L,
         lastPushAt = fields[FirestoreLayout.FIELD_LAST_PUSH_AT] as? Long ?: 0L,
+        lastCategoryPushAt = fields[FirestoreLayout.FIELD_LAST_CATEGORY_PUSH_AT] as? Long ?: 0L,
         lastSweepAt = fields[FirestoreLayout.FIELD_LAST_SWEEP_AT] as? Long ?: 0L,
         lastSyncError = fields[FirestoreLayout.FIELD_LAST_SYNC_ERROR] as? String,
     )

@@ -41,6 +41,11 @@ object AddEditTestTags {
     const val NAME_FIELD: String = "add-edit-name-field"
     const val NOTE_FIELD: String = "add-edit-note-field"
     const val SAVE_PROBLEM: String = "add-edit-save-problem"
+    const val DISMISS_BUTTON: String = "add-edit-dismiss"
+    const val DATE_FUTURE_FLAG: String = "add-edit-date-future-flag"
+
+    /** Prefix for the supporting text under a field, so a test can find the message by field. */
+    const val FIELD_ERROR_PREFIX: String = "add-edit-field-error-"
 }
 
 /** The tag for the chip of a category, so a test can select one by id. */

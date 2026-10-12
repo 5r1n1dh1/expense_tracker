@@ -548,7 +548,7 @@ private fun ModalDatePicker(
     onDateSelected: (Long) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = remember { SheetState(skipPartiallyExpanded = true) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
