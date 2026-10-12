@@ -1,6 +1,9 @@
 package com.srinidhi.kharch.data.auth
 
 import android.content.Context
+import android.os.Build
+import android.os.Build.VERSION_CODES
+import android.os.DirectExecutor
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CredentialManagerCallback
@@ -10,8 +13,16 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
+import androidx.credentials.GetSignInWithGoogleOption
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.CredentialManager
+import androidx.credentials.CredentialManagerCallback
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
+import androidx.credentials.CustomCredential
 import com.google.android.gms.tasks.Task
-import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -46,9 +57,10 @@ class GoogleSignInClient internal constructor(
     private val context: Context,
     private val webClientId: String,
     private val credentialManager: CredentialManager,
-    private val exchange: (String) -> Task<AuthResult>,
+    private val exchange: (String) -> Task<com.google.firebase.auth.AuthResult>,
     private val existingSession: () -> FirebaseUser?,
 ) {
+
     /** Production wiring. Reads the web client id from `R.string.default_web_client_id`. */
     constructor(context: Context) : this(
         context = context.applicationContext,
@@ -127,7 +139,7 @@ class GoogleSignInClient internal constructor(
 
     private fun readGoogleCredential(response: GetCredentialResponse): Result<GoogleIdTokenCredential> {
         val credential = response.credential
-        if (credential !is CustomCredential ||
+        if (credential !is androidx.credentials.CustomCredential ||
             credential.type != GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
         ) {
             return Result.failure(IllegalStateException(UNRECOGNISED_CREDENTIAL))
@@ -151,7 +163,6 @@ class GoogleSignInClient internal constructor(
 
     companion object {
         private const val UNRECOGNISED_CREDENTIAL = "Credential Manager returned an unusable credential"
-
         private const val MISSING_FIREBASE_USER = "Firebase returned no user for the Google credential"
 
         /**
@@ -161,7 +172,7 @@ class GoogleSignInClient internal constructor(
          * one identifiable thing, and so a test can substitute the [exchange] seam without
          * initialising Firebase on a JVM.
          */
-        internal fun exchangeWithFirebase(idToken: String): Task<AuthResult> {
+        internal fun exchangeWithFirebase(idToken: String): Task<com.google.firebase.auth.AuthResult> {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             return FirebaseAuth.getInstance().signInWithCredential(credential)
         }
