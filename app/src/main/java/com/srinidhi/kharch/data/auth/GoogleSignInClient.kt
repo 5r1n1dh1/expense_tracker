@@ -16,7 +16,6 @@ import com.srinidhi.kharch.R
 import com.srinidhi.kharch.data.awaitTask
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.UUID
-import java.util.concurrent.Executor
 
 /**
  * Credential Manager based Google sign-in (plan §6.1, decision D3).
@@ -49,7 +48,7 @@ class GoogleSignInClient internal constructor(
      * `ActivityResultLauncher` or `startActivityForResult`) and passes the result Intent to
      * [handleSignInResult].
      */
-    fun createSignInIntent(): PendingIntent {
+    suspend fun createSignInIntent(): PendingIntent {
         val nonce = UUID.randomUUID().toString()
 
         val request = GetSignInIntentRequest.Builder()
@@ -57,7 +56,7 @@ class GoogleSignInClient internal constructor(
             .setNonce(nonce)
             .build()
 
-        return signInClient.getSignInIntent(signInRequest).awaitTask()
+        return signInClient.getSignInIntent(request).awaitTask()
     }
 
     /**
