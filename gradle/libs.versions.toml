@@ -62,7 +62,7 @@ datastore = "1.2.1"
 work = "2.12.0"
 
 # Sign-in
-credentials = "1.7.0"
+credentials = "1.6.0"
 playServicesAuth = "22.0.0"
 
 # Firebase (Spark plan — free, no billing account)
@@ -79,9 +79,6 @@ playServicesAuth = "22.0.0"
 firebaseBom = "34.19.0"
 # The google-services plugin itself; must match the version of google-services.json in the repo.
 googleServices = "4.5.0"
-# Google ID token credential for Credential Manager
-# https://github.com/google/identity-services-lib-android
-googleId = "1.1.0"
 
 # Widget
 glance = "1.2.0"
@@ -165,7 +162,6 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-common = { module = "com.google.firebase:firebase-common" }
-google-id = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleId" }
 # NOTE: firebase-crashlytics / firebase-analytics / firebase-performance are
 # DELIBERATELY ABSENT — decision P1: nothing leaves the device.
 

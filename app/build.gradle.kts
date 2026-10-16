@@ -177,17 +177,15 @@ dependencies {
 
     implementation(libs.work.runtime.ktx)
 
-    // Credential Manager (D3: modern Google sign-in). play-services-auth is NOT a
-    // dependency — credentials-play-services-auth pulls only the narrow auth client it
-    // needs, whereas the legacy play-services-auth artifact drags in the whole GMS stack.
+    // Credential Manager (D3: modern Google sign-in).
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services)
+    implementation(libs.play.services.auth)
 
     // Firebase — Auth + Firestore ONLY (Spark / free tier, D2)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation(libs.google.id)
     implementation(libs.firebase.common)
     // P1: no crashlytics / analytics / performance — nothing leaves the device.
 
