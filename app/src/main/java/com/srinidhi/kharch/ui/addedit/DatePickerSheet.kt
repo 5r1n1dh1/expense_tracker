@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +33,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
-import java.util.Locale
+
 
 /*
  * The date-picker sheet (plan §7.2C).
@@ -205,7 +206,7 @@ private fun WeekdayHeader() {
     ) {
         for (day in WEEKDAY_ORDER) {
             Text(
-                text = day.getDisplayName(TextStyle.SHORT, Locale.getDefault()).take(1),
+                text = day.getDisplayName(TextStyle.SHORT, LocalConfiguration.current.locale).take(1),
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
                 style = KharchType.caption,
