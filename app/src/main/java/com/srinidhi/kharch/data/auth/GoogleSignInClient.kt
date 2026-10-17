@@ -14,7 +14,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.srinidhi.kharch.R
 import com.srinidhi.kharch.data.awaitTask
-import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.UUID
 
 /**
@@ -93,6 +92,14 @@ class GoogleSignInClient internal constructor(
     suspend fun signOut() {
         FirebaseAuth.getInstance().signOut()
     }
+
+    /** Converts a Firebase user into the workspace-facing [GoogleUser] (Firebase types stay in this file). */
+    private fun toGoogleUser(firebaseUser: FirebaseUser): GoogleUser = GoogleUser(
+        uid = firebaseUser.uid,
+        email = firebaseUser.email,
+        displayName = firebaseUser.displayName,
+        photoUri = firebaseUser.photoUrl?.toString(),
+    )
 
     companion object {
         private const val UNRECOGNISED_CREDENTIAL = "Credential Manager returned an unusable credential"
