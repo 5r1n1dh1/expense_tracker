@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 import java.time.ZoneId
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 /**
  * The dashboard's ViewModel.
@@ -37,7 +39,9 @@ import java.time.ZoneId
  *   and the year-over-year window — is a test input rather than a machine read.
  * @param zone the calendar zone the user's "today" is expressed in.
  */
-class DashboardViewModel(
+
+@HiltViewModel
+class DashboardViewModel @Inject constructor(
     private val ledger: LedgerQuery,
     private val clock: Clock = SystemClock(),
     private val zone: ZoneId = ZoneId.systemDefault(),

@@ -1,6 +1,8 @@
 package com.srinidhi.kharch.di
 
 import android.content.Context
+import com.srinidhi.kharch.core.model.Category
+import com.srinidhi.kharch.core.model.Expense
 import com.srinidhi.kharch.core.time.Clock
 import com.srinidhi.kharch.core.time.SystemClock
 import com.srinidhi.kharch.data.local.AppDatabase
@@ -10,6 +12,7 @@ import com.srinidhi.kharch.data.local.WorkspaceDao
 import com.srinidhi.kharch.data.prefs.SettingsStore
 import com.srinidhi.kharch.data.repository.LocalExpenseRepository
 import com.srinidhi.kharch.data.repository.RoomCategoryCatalog
+import com.srinidhi.kharch.domain.LedgerQuery
 import com.srinidhi.kharch.domain.expense.CategoryCatalog
 import com.srinidhi.kharch.domain.expense.ExpenseRepository
 import dagger.Module
@@ -17,6 +20,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.time.ZoneId
 import javax.inject.Singleton
 
 /*
@@ -64,6 +68,23 @@ object LedgerModule {
     @Provides
     @Singleton
     fun provideCategoryCatalog(dao: CategoryDao): CategoryCatalog = RoomCategoryCatalog(dao)
+
+    @Provides
+    @Singleton
+    fun provideZoneId(): ZoneId = ZoneId.systemDefault()
+
+    @Provides
+    @Singleton
+    fun provideLedgerQuery(
+        expenses: ExpenseRepository,
+        categories: CategoryCatalog,
+    ): LedgerQuery = object : LedgerQuery {
+        override fun observeExpenses(): kotlinx.coroutines.flow.Flow<List<Expense>> =
+            expenses.observeAll()
+
+        override fun observeCategories(): kotlinx.coroutines.flow.Flow<List<Category>> =
+            categories.observeAll()
+    }
 
     /**
      * Settings and the workspace pointer. Added here so sync (Phase 2/3) has one
