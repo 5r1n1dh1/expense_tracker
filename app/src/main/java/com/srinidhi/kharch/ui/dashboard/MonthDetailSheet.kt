@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -209,7 +210,7 @@ private fun CategorySection(breakdown: MonthlyBreakdown, labels: Map<String, Str
                 modifier = Modifier
                     .clip(CircleShape)
                     .clickable { expanded = !expanded }
-                    .padding(PaddingValues(horizontal = 4.dp, vertical = 4.dp)),
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
             )
         } else if (expanded) {
             Text(
@@ -219,7 +220,7 @@ private fun CategorySection(breakdown: MonthlyBreakdown, labels: Map<String, Str
                 modifier = Modifier
                     .clip(CircleShape)
                     .clickable { expanded = !expanded }
-                    .padding(PaddingValues(horizontal = 4.dp, vertical = 4.dp)),
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
             )
         }
     }

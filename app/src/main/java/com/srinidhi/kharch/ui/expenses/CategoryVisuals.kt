@@ -104,7 +104,7 @@ fun categoryGlyphRes(iconKey: String): Int = when (iconKey) {
 fun categoryTint(colorToken: String): Color {
     val glass = currentGlassTheme()
     val slot = slotFor(colorToken)
-    val base = tintBase(glass, slot % TINT_BASES_SIZE)
+    val base = tintBase(glass.colors, slot % TINT_BASES_SIZE)
     val strength = TINT_STRENGTHS[slot / TINT_BASES_SIZE % TINT_STRENGTHS.size]
     return base.copy(alpha = strength)
 }
