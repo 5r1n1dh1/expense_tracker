@@ -205,7 +205,7 @@ class BarChartMathTest {
         assertTrue("the offset must grow monotonically", long > short)
         assertEquals(
             "left and right must be symmetric",
-            short,
+            -short,
             BarChartMath.swipeOffset(-10f, blocked = false, limitPx = limit),
             EPSILON,
         )
