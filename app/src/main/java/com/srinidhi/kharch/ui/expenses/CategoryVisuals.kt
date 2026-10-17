@@ -1,6 +1,6 @@
-package com.srinidhi.kharch.ui.expenses
-
 @file:Suppress("NoUnusedImports")
+
+package com.srinidhi.kharch.ui.expenses
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background

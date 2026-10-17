@@ -22,6 +22,8 @@ import com.srinidhi.kharch.ui.theme.CATEGORY_EDUCATION_DARK
 import com.srinidhi.kharch.ui.theme.CATEGORY_EDUCATION_LIGHT
 import com.srinidhi.kharch.ui.theme.CATEGORY_ENTERTAINMENT_DARK
 import com.srinidhi.kharch.ui.theme.CATEGORY_ENTERTAINMENT_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_BILLS_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_BILLS_LIGHT
 import com.srinidhi.kharch.ui.theme.CATEGORY_FOOD_DARK
 import com.srinidhi.kharch.ui.theme.CATEGORY_FOOD_LIGHT
 import com.srinidhi.kharch.ui.theme.CATEGORY_GIFTS_DARK

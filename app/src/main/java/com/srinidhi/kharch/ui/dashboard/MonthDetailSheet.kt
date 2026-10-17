@@ -1,6 +1,6 @@
-package com.srinidhi.kharch.ui.dashboard
-
 @file:Suppress("ImportOrdering")
+
+package com.srinidhi.kharch.ui.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
