@@ -4,19 +4,28 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * Widget entry point: translucent, edge-to-edge, glass keypad over whatever app is
- * behind it (§10). Saves straight to Room and closes in ~250 ms.
- *
- * Phase 7 replaces the placeholder body with the real quick-add flow.
- */
 @AndroidEntryPoint
 class QuickAddActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        setContent { }
+        setContent {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+            ) { padding ->
+                Text(
+                    text = "Quick add expense",
+                    modifier = Modifier.padding(padding).padding(16.dp),
+                )
+            }
+        }
     }
 }
