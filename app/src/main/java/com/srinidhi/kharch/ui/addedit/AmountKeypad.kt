@@ -1,4 +1,4 @@
-@file:Suppress("all")
+@file:Suppress("ImportOrdering", "NoUnusedImports", "NoWildcardImports", "LongParameterList", "CyclomaticComplexMethod", "MaxLineLength", "UnusedPrivateMember", "ReturnCount", "TooManyFunctions")
 package com.srinidhi.kharch.ui.addedit
 
 import androidx.compose.foundation.background
