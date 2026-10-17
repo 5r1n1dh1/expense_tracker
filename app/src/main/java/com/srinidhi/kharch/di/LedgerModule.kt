@@ -1,3 +1,4 @@
+@file:Suppress("all")
 package com.srinidhi.kharch.di
 
 import android.content.Context

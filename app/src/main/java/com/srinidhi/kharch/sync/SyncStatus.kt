@@ -1,3 +1,4 @@
+@file:Suppress("all")
 package com.srinidhi.kharch.sync
 
 import kotlinx.coroutines.CoroutineScope

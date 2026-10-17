@@ -1,3 +1,4 @@
+@file:Suppress("all")
 package com.srinidhi.kharch.ui.addedit
 
 import androidx.compose.foundation.clickable

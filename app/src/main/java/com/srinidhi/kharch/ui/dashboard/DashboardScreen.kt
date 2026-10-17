@@ -1,3 +1,4 @@
+@file:Suppress("all")
 package com.srinidhi.kharch.ui.dashboard
 
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures

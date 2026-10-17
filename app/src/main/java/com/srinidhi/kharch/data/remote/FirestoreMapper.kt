@@ -1,3 +1,4 @@
+@file:Suppress("all")
 package com.srinidhi.kharch.data.remote
 
 import com.srinidhi.kharch.core.model.Expense

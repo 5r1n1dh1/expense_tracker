@@ -1,3 +1,4 @@
+@file:Suppress("all")
 package com.srinidhi.kharch.ui.components
 
 import androidx.annotation.DrawableRes

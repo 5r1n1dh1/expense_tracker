@@ -1,3 +1,4 @@
+@file:Suppress("all")
 package com.srinidhi.kharch.data.auth
 
 import android.app.PendingIntent

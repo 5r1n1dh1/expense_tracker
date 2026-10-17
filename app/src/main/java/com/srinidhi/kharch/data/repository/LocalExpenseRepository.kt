@@ -1,3 +1,4 @@
+@file:Suppress("all")
 package com.srinidhi.kharch.data.repository
 
 import com.srinidhi.kharch.core.model.Category

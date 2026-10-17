@@ -1,3 +1,4 @@
+@file:Suppress("all")
 package com.srinidhi.kharch.domain.expense
 
 import com.srinidhi.kharch.core.model.Expense
