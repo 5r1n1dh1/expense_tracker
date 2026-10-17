@@ -1,4 +1,12 @@
-@file:Suppress("ImportOrdering", "NoUnusedImports", "NoWildcardImports", "LongParameterList", "CyclomaticComplexMethod", "MaxLineLength", "UnusedPrivateMember", "ReturnCount", "TooManyFunctions")
+@file:Suppress("ImportOrdering")
+@file:Suppress("NoUnusedImports")
+@file:Suppress("NoWildcardImports")
+@file:Suppress("LongParameterList")
+@file:Suppress("CyclomaticComplexMethod")
+@file:Suppress("MaxLineLength")
+@file:Suppress("UnusedPrivateMember")
+@file:Suppress("ReturnCount")
+@file:Suppress("TooManyFunctions")
 package com.srinidhi.kharch.data.remote
 
 import com.google.firebase.firestore.DocumentReference
