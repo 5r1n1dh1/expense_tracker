@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.R
-import com.srinidhi.kharch.ui.theme.Color.*
+import com.srinidhi.kharch.ui.theme.*
 import com.srinidhi.kharch.ui.theme.GlassShape
 import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.glassTokens

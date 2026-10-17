@@ -209,7 +209,7 @@ private fun CategorySection(breakdown: MonthlyBreakdown, labels: Map<String, Str
                 modifier = Modifier
                     .clip(CircleShape)
                     .clickable { expanded = !expanded }
-                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                    .padding(PaddingValues(horizontal = 4.dp, vertical = 4.dp)),
             )
         } else if (expanded) {
             Text(
@@ -219,7 +219,7 @@ private fun CategorySection(breakdown: MonthlyBreakdown, labels: Map<String, Str
                 modifier = Modifier
                     .clip(CircleShape)
                     .clickable { expanded = !expanded }
-                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                    .padding(PaddingValues(horizontal = 4.dp, vertical = 4.dp)),
             )
         }
     }

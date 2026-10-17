@@ -474,7 +474,7 @@ private fun RefundCandidateRow(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = InrFormatter.format(expense.amount),
+                text = InrFormatter.Default.format(expense.amount),
                 style = KharchType.amountRow,
                 color = if (selected) glass.colors.credit else glass.colors.onSecondary,
             )

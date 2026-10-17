@@ -3,6 +3,7 @@ package com.srinidhi.kharch.ui.dashboard
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -329,7 +330,7 @@ private fun CategorySplitCard(
 @Composable
 private fun BoxScope.EmptyChartOverlay(onAddExpense: () -> Unit) {
     val glass = currentGlassTheme()
-    Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         EmptyState(
             headline = "Nothing tracked yet",
             subline = "Tap + to add your first expense",
