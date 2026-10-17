@@ -204,6 +204,7 @@ fun DashboardRoute(
 }
 
 /** The monthly split card: the swipe target, the frame and the chart. */
+@Suppress("LongParameterList")
 @Composable
 private fun MonthlySplitCard(
     dashboard: YearDashboard,

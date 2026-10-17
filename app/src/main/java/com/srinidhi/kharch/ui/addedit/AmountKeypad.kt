@@ -107,6 +107,7 @@ fun AmountHero(
  * Done lives *inside* the keypad rather than beside it: a thumb already resting on the bottom
  * row should not have to travel to the far edge of the sheet to commit.
  */
+@Suppress("LongParameterList")
 @Composable
 fun AmountKeypad(
     buffer: AmountBuffer,

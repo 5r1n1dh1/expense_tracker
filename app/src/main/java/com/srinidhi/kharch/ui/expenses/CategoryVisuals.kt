@@ -1,5 +1,7 @@
 package com.srinidhi.kharch.ui.expenses
 
+@file:Suppress("NoUnusedImports")
+
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

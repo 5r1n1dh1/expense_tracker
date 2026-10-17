@@ -16,7 +16,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.R
-import com.srinidhi.kharch.ui.theme.*
+import com.srinidhi.kharch.ui.theme.CATEGORY_CASH_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_CASH_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_EDUCATION_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_EDUCATION_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_ENTERTAINMENT_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_ENTERTAINMENT_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_FOOD_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_FOOD_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_GIFTS_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_GIFTS_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_GROCERIES_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_GROCERIES_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_HEALTH_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_HEALTH_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_OTHER_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_OTHER_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_RENT_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_RENT_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_SHOPPING_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_SHOPPING_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_TRAVEL_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_TRAVEL_LIGHT
+import com.srinidhi.kharch.ui.theme.CATEGORY_TRANSPORT_DARK
+import com.srinidhi.kharch.ui.theme.CATEGORY_TRANSPORT_LIGHT
 import com.srinidhi.kharch.ui.theme.GlassShape
 import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.glassTokens
@@ -59,6 +82,7 @@ fun categoryIcon(key: String): Int = when (key) {
  * Tokens are semantic (`category.food`), not raw hex, so the palette re-derives
  * correctly under dynamic colour and stays covered by the contrast test.
  */
+@Suppress("CyclomaticComplexMethod")
 fun categoryColor(token: String, dark: Boolean): Color = when (token) {
     "category.food" -> if (dark) CATEGORY_FOOD_DARK else CATEGORY_FOOD_LIGHT
     "category.transport" -> if (dark) CATEGORY_TRANSPORT_DARK else CATEGORY_TRANSPORT_LIGHT

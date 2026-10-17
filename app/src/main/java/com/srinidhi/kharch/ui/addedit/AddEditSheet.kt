@@ -90,6 +90,7 @@ private const val SCROLL_TAG = "add-edit-scroll"
  * @param onManageCategories opens the category manager (D4). The Add sheet's "Manage" chip is
  *   the documented entry point; the destination belongs to Phase 8.
  */
+@Suppress("LongParameterList")
 @Composable
 fun AddEditSheet(
     state: AddEditUiState,
