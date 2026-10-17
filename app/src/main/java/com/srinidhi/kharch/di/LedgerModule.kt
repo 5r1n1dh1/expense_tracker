@@ -72,7 +72,7 @@ object LedgerModule {
     @Provides
     @Singleton
     fun provideSettingsStore(@ApplicationContext context: Context): SettingsStore =
-        SettingsStore(context)
+        SettingsStore.create(context)
 
     @Provides
     fun provideWorkspaceDao(database: AppDatabase): WorkspaceDao = database.workspaceDao()

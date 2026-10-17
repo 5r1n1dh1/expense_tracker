@@ -1,6 +1,7 @@
 package com.srinidhi.kharch.domain.expense
 
 import com.srinidhi.kharch.core.model.Category
+import com.srinidhi.kharch.core.model.Expense
 import kotlinx.coroutines.flow.Flow
 
 /**

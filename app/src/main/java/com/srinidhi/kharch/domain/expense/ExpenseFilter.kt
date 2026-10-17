@@ -99,7 +99,8 @@ data class ExpenseFilter(
             if (trimmed.isEmpty()) return null
             val rupees = trimmed.toBigDecimalOrNull() ?: return null
             if (rupees.signum() < 0) return null
-            return rupees.movePointRight(2).toLongOrNull()?.takeIf { paise -> paise >= 0L }
+            val paise = rupees.movePointRight(2).longValue()
+            return if (paise >= 0L) paise else null
         }
     }
 }

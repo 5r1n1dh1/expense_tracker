@@ -128,7 +128,7 @@ object GoogleSignInClientFactory {
             context = context.applicationContext,
             webClientId = context.getString(R.string.default_web_client_id),
             signInClient = Identity.getSignInClient(context),
-            exchange = ::exchangeWithFirebase,
+            exchange = GoogleSignInClient::exchangeWithFirebase,
             existingSession = { FirebaseAuth.getInstance().currentUser },
         )
     }

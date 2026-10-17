@@ -9,7 +9,6 @@ import com.srinidhi.kharch.data.local.ExpenseDao
 import com.srinidhi.kharch.domain.QuickAddCategory
 import com.srinidhi.kharch.domain.QuickAddDraft
 import com.srinidhi.kharch.domain.QuickAddStore
-import com.srinidhi.kharch.widget.requestKharchWidgetUpdate
 import java.util.UUID
 
 /**
@@ -68,7 +67,7 @@ class RoomQuickAddStore internal constructor(
         fun open(context: Context, clock: Clock = SystemClock()): RoomQuickAddStore {
             val appContext = context.applicationContext
             val database = AppDatabase.builder(appContext, clock).build()
-            return of(database = database, clock = clock) { requestKharchWidgetUpdate(appContext) }
+            return of(database = database, clock = clock) {}
         }
 
         /** Wraps an already-built database — the seam the tests use. */

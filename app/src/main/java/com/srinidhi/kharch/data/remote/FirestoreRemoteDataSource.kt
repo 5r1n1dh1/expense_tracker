@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
 import com.srinidhi.kharch.data.awaitTask
+import com.srinidhi.kharch.data.remote.FirestoreMapper.toMap
 import com.srinidhi.kharch.data.remote.dto.CategoryDto
 import com.srinidhi.kharch.data.remote.dto.ExpenseDto
 import com.srinidhi.kharch.data.remote.dto.SyncMetaDto

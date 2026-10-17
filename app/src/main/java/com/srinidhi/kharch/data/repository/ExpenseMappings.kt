@@ -14,7 +14,7 @@ import com.srinidhi.kharch.data.local.SyncState
 fun ExpenseEntity.toExpense(): Expense = Expense(
     id = id,
     name = name,
-    amount = amount,
+    amountPaise = amountPaise,
     kind = kind,
     currencyCode = currencyCode,
     categoryId = categoryId,
