@@ -126,7 +126,7 @@ private fun YearOption(
             text = year.toString(),
             style = MaterialTheme.typography.titleMedium,
             color = textColor,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+            modifier = Modifier.align(Alignment.Center),
         )
     }
 }

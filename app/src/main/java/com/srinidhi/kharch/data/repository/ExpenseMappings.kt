@@ -1,6 +1,7 @@
 package com.srinidhi.kharch.data.repository
 
 import com.srinidhi.kharch.core.model.Expense
+import com.srinidhi.kharch.core.model.MagnitudePaise
 import com.srinidhi.kharch.data.local.ExpenseEntity
 import com.srinidhi.kharch.data.local.SyncState
 
@@ -14,7 +15,7 @@ import com.srinidhi.kharch.data.local.SyncState
 fun ExpenseEntity.toExpense(): Expense = Expense(
     id = id,
     name = name,
-    amountPaise = amountPaise,
+    amount = MagnitudePaise(amountPaise),
     kind = kind,
     currencyCode = currencyCode,
     categoryId = categoryId,

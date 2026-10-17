@@ -1,10 +1,14 @@
 package com.srinidhi.kharch.sync
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -72,9 +76,11 @@ class SyncStateHolder @Inject constructor() {
     val status: Flow<SyncStatus> = state.map { it.toStatus() }
 
     /** The current status as a [StateFlow], for consumers that need an immediate value. */
-    val statusState: StateFlow<SyncStatus> = MutableStateFlow(state.value.toStatus()).also { mirror ->
-        state.map { it.toStatus() }.onEach(mirror::emit).launchIn(scope = SyncStateScope)
-    }
+    val statusState: StateFlow<SyncStatus> = state.map { it.toStatus() }.stateIn(
+        scope = CoroutineScope(SupervisorJob()),
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = state.value.toStatus(),
+    )
 
     internal fun update(transform: (SyncSnapshot) -> SyncSnapshot) {
         state.update(transform)

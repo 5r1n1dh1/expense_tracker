@@ -21,9 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.core.money.InrFormatter
 import com.srinidhi.kharch.domain.expense.AmountBuffer
-import com.srinidhi.kharch.ui.glass.GlassShape
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.glass.GlassTier
+import com.srinidhi.kharch.ui.theme.GlassShape
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.motion.KharchHaptic
 import com.srinidhi.kharch.ui.motion.LocalHaptics
 import com.srinidhi.kharch.ui.theme.KharchType
@@ -94,7 +94,7 @@ fun AmountHero(
         }
         Text(
             modifier = Modifier.testTag(AddEditTestTags.AMOUNT_HINT),
-            text = InrFormatter.formatPlain(buffer.paise()),
+            text = InrFormatter.Default.formatPlain(buffer.paise()),
             style = KharchType.caption,
             color = accent,
         )

@@ -23,12 +23,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.R
 import com.srinidhi.kharch.core.model.Category
-import com.srinidhi.kharch.ui.glass.GlassShape
+import com.srinidhi.kharch.ui.components.categoryColor
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.glass.GlassTier
 import com.srinidhi.kharch.ui.motion.KharchHaptic
 import com.srinidhi.kharch.ui.motion.LocalHaptics
 import com.srinidhi.kharch.ui.theme.GlassColors
+import com.srinidhi.kharch.ui.theme.GlassShape
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.currentGlassTheme
 
 /*

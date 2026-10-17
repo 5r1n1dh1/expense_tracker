@@ -44,14 +44,14 @@ import com.srinidhi.kharch.core.money.InrFormatter
 import com.srinidhi.kharch.domain.expense.ExpenseDraftError
 import com.srinidhi.kharch.domain.expense.ExpenseDraftValidation
 import com.srinidhi.kharch.ui.expenses.CategoryChip
-import com.srinidhi.kharch.ui.glass.GlassShape
+import com.srinidhi.kharch.ui.components.glassTextFieldColors
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.glass.GlassTier
 import com.srinidhi.kharch.ui.motion.KharchHaptic
 import com.srinidhi.kharch.ui.motion.LocalHaptics
+import com.srinidhi.kharch.ui.theme.GlassShape
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.theme.KharchType
 import com.srinidhi.kharch.ui.theme.currentGlassTheme
-import com.srinidhi.kharch.ui.theme.glassTextFieldColors
 
 /*
  * The Add / Edit sheet (plan §7.2C) — the app's only manual entry path (C6).
@@ -287,7 +287,7 @@ private fun SheetHandle(title: String, onDismiss: () -> Unit) {
         Text(
             modifier = Modifier
                 .testTag(AddEditTestTags.DISMISS_BUTTON)
-                .selectable(role = Role.Button) {
+                .selectable(selected = false, role = Role.Button) {
                     haptics.perform(KharchHaptic.Selection)
                     onDismiss()
                 }
@@ -339,7 +339,7 @@ private fun ManageChip(onClick: () -> Unit) {
     GlassSurface(
         modifier = Modifier
             .heightIn(min = 44.dp)
-            .selectable(role = Role.Button) {
+            .selectable(selected = false, role = Role.Button) {
                 haptics.perform(KharchHaptic.Selection)
                 onClick()
             }
@@ -371,7 +371,7 @@ private fun DateChip(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
-            .selectable(role = Role.Button) {
+            .selectable(selected = false, role = Role.Button) {
                 haptics.perform(KharchHaptic.Selection)
                 onClick()
             }

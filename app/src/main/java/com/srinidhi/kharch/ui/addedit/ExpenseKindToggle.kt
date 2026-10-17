@@ -22,9 +22,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.srinidhi.kharch.core.model.ExpenseKind
-import com.srinidhi.kharch.ui.glass.GlassShape
 import com.srinidhi.kharch.ui.glass.GlassSurface
-import com.srinidhi.kharch.ui.glass.GlassTier
+import com.srinidhi.kharch.ui.theme.GlassShape
+import com.srinidhi.kharch.ui.theme.GlassTier
 import com.srinidhi.kharch.ui.motion.KharchHaptic
 import com.srinidhi.kharch.ui.motion.LocalHaptics
 import com.srinidhi.kharch.ui.theme.currentGlassTheme
