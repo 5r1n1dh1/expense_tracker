@@ -29,7 +29,7 @@
 agp = "9.3.1"
 gradle = "9.5.0"
 kotlin = "2.2.10"
-ksp = "2.2.10-2.0.2"
+ksp = "2.3.12"
 
 # SDK
 # compileSdk 37: current AndroidX (Compose 1.12.x, navigation 2.10.x,
