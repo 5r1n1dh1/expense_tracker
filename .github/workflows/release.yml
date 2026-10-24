@@ -85,7 +85,6 @@ jobs:
       # Skipped automatically when FIREBASE_CLI_TOKEN is not configured, so a release
       # never fails just because hosting hasn't been set up yet.
       - name: Publish update manifest (P10)
-        if: ${{ secrets.FIREBASE_CLI_TOKEN != '' }}
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
           VERSION_NAME: ${{ github.ref_name }}
