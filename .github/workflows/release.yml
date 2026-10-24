@@ -91,6 +91,10 @@ jobs:
           RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.ref_name }}/app-release.apk
         run: |
           set -euo pipefail
+          if [ -z "$FIREBASE_TOKEN" ]; then
+            echo "Firebase hosting not configured — skipping manifest publish."
+            exit 0
+          fi
           NOTES=$(git tag -l --format='%(contents)' "$VERSION_NAME" | head -60 || true)
           mkdir -p public
           jq -n \
