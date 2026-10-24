@@ -5,6 +5,7 @@ import com.srinidhi.kharch.data.local.CategoryDao
 import com.srinidhi.kharch.data.local.ExpenseDao
 import com.srinidhi.kharch.data.local.OutboxDao
 import com.srinidhi.kharch.data.local.SyncState
+import com.srinidhi.kharch.data.remote.FirestoreMapper.toExpenseDto
 import com.srinidhi.kharch.data.local.WorkspaceDao
 import com.srinidhi.kharch.data.remote.RemoteLedger
 import com.srinidhi.kharch.data.remote.SyncException
@@ -87,8 +88,8 @@ class SyncCoordinator @Inject constructor(
             val deletes = outboxDao.queryPendingDeletes(limit = MAX_BATCH_OPS)
             val toPush = (upserts + deletes).take(MAX_BATCH_OPS)
             if (toPush.isEmpty()) break
-            remote.pushExpenses(wid, toPush.filterIsInstance<ExpenseDto>())
-            remote.pushCategories(wid, toPush.filterIsInstance<CategoryDto>())
+            val dtos = toPush.map { it.toExpenseDto("unknown") }
+            remote.pushExpenses(wid, dtos)
             outboxDao.markSynced(toPush.map { it.id })
             pending = outboxDao.pendingUpsertCount() + outboxDao.pendingDeleteCount()
         }
