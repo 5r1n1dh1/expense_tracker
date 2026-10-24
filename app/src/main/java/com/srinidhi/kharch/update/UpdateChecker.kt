@@ -206,4 +206,3 @@ class UpdateChecker(
         const val DEFAULT_MANIFEST_URL: String = "https://kharch.web.app/version.json"
     }
 }
-EOF

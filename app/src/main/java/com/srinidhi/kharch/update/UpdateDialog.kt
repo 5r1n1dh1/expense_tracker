@@ -106,4 +106,3 @@ fun UpdateDialog(
         },
     )
 }
-EOF
