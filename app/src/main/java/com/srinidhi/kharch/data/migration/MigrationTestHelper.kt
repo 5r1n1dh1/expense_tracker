@@ -13,7 +13,7 @@ import com.srinidhi.kharch.data.local.AppDatabase
  * the production builder rather than a private copy that could drift.
  *
  * Rules enforced by the surrounding tooling:
- *  - `fallbackToDestructiveMigration` is banned by `scripts/check-no-destructive-migration.sh`.
+ *  - `destructive-migration-fallback` is banned by `scripts/check-no-destructive-migration.sh`.
  *  - Every schema version exports its JSON under `app/schemas/` (`room.schemaLocation`).
  */
 object MigrationTestHelper {
