@@ -85,7 +85,7 @@ glance = "1.2.0"
 
 # Coroutines / serialization
 coroutines = "1.11.0"
-serializationJson = "1.11.0"
+serializationJson = "1.12.0"
 
 # Quality tooling
 detekt = "1.23.8"
