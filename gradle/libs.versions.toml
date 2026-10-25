@@ -76,7 +76,7 @@ playServicesAuth = "22.0.0"
 # BoM 34.19.0 -> auth 24.2.0, firestore 26.6.0, common 23.0.0 — all compiled
 # against Kotlin 2.1/2.2 and therefore readable by AGP's 2.2.10 compiler.
 # Revisit when AGP bundles Kotlin >= 2.4.
-firebaseBom = "34.19.0"
+firebaseBom = "35.1.0"
 # The google-services plugin itself; must match the version of google-services.json in the repo.
 googleServices = "4.5.0"
 
