@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.srinidhi.kharch.data.export.ConflictStrategy
 import com.srinidhi.kharch.data.export.JsonImporter
 import com.srinidhi.kharch.ui.components.GlassButton
 import com.srinidhi.kharch.ui.components.GlassCard
@@ -30,8 +31,8 @@ enum class DateRangeChoice {
 
 data class DataManagementUiState(
     val dateRange: DateRangeChoice = DateRangeChoice.ALL,
-    val conflictStrategy: JsonImporter.ConflictStrategy =
-        JsonImporter.ConflictStrategy.MERGE,
+    val conflictStrategy: ConflictStrategy =
+        ConflictStrategy.MERGE,
     val importPreview: String? = null,
     val isImporting: Boolean = false,
 )
@@ -43,7 +44,7 @@ fun DataManagementScreen(
     onExportJson: (DateRangeChoice) -> Unit = {},
     onExportCsv: (DateRangeChoice) -> Unit = {},
     onImportJson: () -> Unit = {},
-    onConflictStrategySelected: (JsonImporter.ConflictStrategy) -> Unit = {},
+    onConflictStrategySelected: (ConflictStrategy) -> Unit = {},
     onConfirmImport: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -117,7 +118,7 @@ fun DataManagementScreen(
                         color = glass.colors.onPrimary,
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        JsonImporter.ConflictStrategy.values().forEach { strategy ->
+                        ConflictStrategy.values().forEach { strategy ->
                             GlassButton(
                                 text = strategy.name.lowercase().replaceFirstChar { c ->
                                     c.uppercase()

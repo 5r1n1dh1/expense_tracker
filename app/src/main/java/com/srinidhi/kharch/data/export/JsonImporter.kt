@@ -274,6 +274,7 @@ class JsonImporter {
         sortOrder = sortOrder,
         isSystem = isSystem,
         isHidden = isHidden,
+        updatedAt = updatedAt,
     )
 
     companion object {

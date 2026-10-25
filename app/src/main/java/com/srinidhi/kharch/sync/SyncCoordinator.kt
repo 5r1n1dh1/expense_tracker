@@ -5,20 +5,25 @@ import com.srinidhi.kharch.data.local.CategoryDao
 import com.srinidhi.kharch.data.local.ExpenseDao
 import com.srinidhi.kharch.data.local.OutboxDao
 import com.srinidhi.kharch.data.local.SyncState
-import com.srinidhi.kharch.data.remote.FirestoreMapper.toExpenseDto
 import com.srinidhi.kharch.data.local.WorkspaceDao
+import com.srinidhi.kharch.data.remote.FirestoreMapper.toExpenseDto
+import com.srinidhi.kharch.data.remote.FirestoreMapper.toExpense as dtoToExpense
+import com.srinidhi.kharch.data.remote.FirestoreMapper.toEntity as dtoToEntity
 import com.srinidhi.kharch.data.remote.RemoteLedger
 import com.srinidhi.kharch.data.remote.SyncException
 import com.srinidhi.kharch.data.remote.dto.ExpenseDto
 import com.srinidhi.kharch.data.remote.dto.CategoryDto
 import com.srinidhi.kharch.data.remote.dto.SyncMetaDto
+import com.srinidhi.kharch.data.repository.toExpense
+import com.srinidhi.kharch.data.repository.toEntity
 import com.srinidhi.kharch.domain.sync.ConflictResolver
+import com.srinidhi.kharch.domain.sync.LedgerRow
 import com.srinidhi.kharch.domain.sync.QuotaGovernor
 import com.srinidhi.kharch.domain.sync.QuotaDecision
+import com.srinidhi.kharch.domain.sync.QuotaKind
 import com.srinidhi.kharch.domain.sync.QuotaStatus
 import com.srinidhi.kharch.domain.sync.SyncErrorKind
-import com.srinidhi.kharch.domain.sync.SyncStateHolder
-import kotlinx.coroutines.Mutex
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.sync.withLock
@@ -64,7 +69,7 @@ class SyncCoordinator @Inject constructor(
             } catch (e: SyncException) {
                 when (e.kind) {
                     SyncErrorKind.RESOURCE_EXHAUSTED -> {
-                        governor.onResourceExhausted()
+                        governor.onResourceExhausted(QuotaKind.WRITES)
                         stateHolder.update { s ->
                             s.copy(quotaMessage = governor.lockMessage(),
                                 resetAtMillis = governor.currentStatus().resetAtMillis)
@@ -115,13 +120,19 @@ class SyncCoordinator @Inject constructor(
     ) {
         for (dto in expenses) {
             val local = expenseDao.findById(dto.id)
-            val merged = ConflictResolver.resolve(local?.toRow(), dto.toRow())
-            merged?.let { expenseDao.upsert(it.toEntity()) }
+            val localRow = local?.let { LedgerRow(it.toExpense(), "unknown") }
+            val remoteRow = LedgerRow(dto.dtoToExpense(), dto.authorUid)
+            val merged = ConflictResolver.resolve(localRow, remoteRow)
+            merged?.let { expenseDao.upsert(it.expense.toEntity(SyncState.SYNCED)) }
         }
         for (dto in categories) {
             val local = categoryDao.findById(dto.id)
-            val merged = ConflictResolver.resolve(local?.toRow(), dto.toRow())
-            merged?.let { categoryDao.upsert(it.toEntity()) }
+            val entity = dto.dtoToEntity()
+            if (local == null) {
+                categoryDao.insertIfAbsent(entity)
+            } else if (dto.updatedAt > local.updatedAt) {
+                categoryDao.update(entity)
+            }
         }
     }
 

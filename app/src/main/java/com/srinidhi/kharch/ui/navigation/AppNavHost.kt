@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -131,7 +133,7 @@ private fun GlassBottomBar(
                 onClick = {
                     navController.navigate(Routes.Dashboard) {
                         popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                            setSaveState(true)
                         }
                         launchSingleTop = true
                         restoreState = true
@@ -150,7 +152,7 @@ private fun GlassBottomBar(
                 onClick = {
                     navController.navigate(Routes.Expenses) {
                         popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                            setSaveState(true)
                         }
                         launchSingleTop = true
                         restoreState = true
@@ -169,7 +171,7 @@ private fun GlassBottomBar(
                 onClick = {
                     navController.navigate(Routes.Accounts) {
                         popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                            setSaveState(true)
                         }
                         launchSingleTop = true
                         restoreState = true
@@ -188,7 +190,7 @@ private fun GlassBottomBar(
                 onClick = {
                     navController.navigate(Routes.Settings) {
                         popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                            setSaveState(true)
                         }
                         launchSingleTop = true
                         restoreState = true

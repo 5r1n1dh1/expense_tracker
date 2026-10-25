@@ -24,4 +24,5 @@ data class Category(
     val sortOrder: Int = 0,
     val isSystem: Boolean = false,
     val isHidden: Boolean = false,
+    val updatedAt: Long = 0L,
 )

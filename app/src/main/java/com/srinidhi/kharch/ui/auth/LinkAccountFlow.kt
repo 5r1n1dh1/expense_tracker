@@ -1,7 +1,7 @@
 package com.srinidhi.kharch.ui.auth
 
 import android.content.Intent
-import com.google.android.gms.auth.api.identity.GetMultipleSignInWithGoogleOption
+import com.google.android.gms.auth.api.identity.GetSignInWithGoogleOption
 import com.srinidhi.kharch.data.auth.GoogleSignInClient
 import com.srinidhi.kharch.data.auth.GoogleSignInResult
 import com.srinidhi.kharch.data.auth.GoogleUser
@@ -28,7 +28,7 @@ class LinkAccountFlow @Inject constructor(
     ): LinkResult {
         val result = try {
             if (useMultiple) {
-                val option = GetMultipleSignInWithGoogleOption.Builder().build()
+                val option = GetSignInWithGoogleOption.Builder().build()
                 val intent = signInClient.createSignInIntent()
                 // Conceptual multi-account path; production uses option
                 signInClient.handleSignInResult(Intent())

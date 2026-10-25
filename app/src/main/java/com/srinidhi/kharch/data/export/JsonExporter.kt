@@ -160,7 +160,7 @@ class JsonExporter(private val includeDeleted: Boolean = false) {
         sortOrder = sortOrder,
         isSystem = isSystem,
         isHidden = isHidden,
-
+        updatedAt = updatedAt,
     )
 
     companion object {

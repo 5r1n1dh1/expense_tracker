@@ -1,6 +1,9 @@
 package com.srinidhi.kharch.widget
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment as ComposeAlignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.appwidget.GlanceAppWidget
@@ -11,8 +14,8 @@ import androidx.glance.layout.Column
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.text.Text
-import androidx.glance.unit.Color
-import androidx.glance.unit.dp
+import androidx.glance.text.TextStyle
+import androidx.glance.unit.ColorProvider
 
 class KharchWidget : GlanceAppWidget() {
     override suspend fun provideGlance(
@@ -30,20 +33,20 @@ private fun WidgetContent() {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16),
         contentAlignment = Alignment.Center,
     ) {
-        Column(horizontalAlignment = Alignment.Horizontal) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "Kharch",
-                style = androidx.glance.text.TextStyle(
-                    color = Color.Black,
+                style = TextStyle(
+                    color = ColorProvider(Color.Black.value.toLong()),
                 ),
             )
             Text(
                 text = "Tap + to add",
-                style = androidx.glance.text.TextStyle(
-                    color = Color.DarkGray,
+                style = TextStyle(
+                    color = ColorProvider(Color.DarkGray.value.toLong()),
                 ),
             )
         }

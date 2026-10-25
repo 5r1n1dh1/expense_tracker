@@ -65,6 +65,7 @@ fun CategoryEntity.toDomain(): Category = Category(
     sortOrder = sortOrder,
     isSystem = isSystem,
     isHidden = isHidden,
+    updatedAt = updatedAt,
 )
 
 /** Domain model to Room row. */
