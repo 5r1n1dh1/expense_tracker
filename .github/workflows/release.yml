@@ -62,10 +62,15 @@ jobs:
       - name: Build signed release
         run: ./gradlew clean assembleRelease bundleRelease --stacktrace
 
+      - name: Rename release APK to expense_tracker.apk
+        run: |
+          chmod +x release/apk-rename.sh
+          ./release/apk-rename.sh
+
       - name: Verify APK is signed
         run: |
-          APK=app/build/outputs/apk/release/app-release.apk
-          test -f "$APK" || { echo "::error::release APK missing"; exit 1; }
+          APK=app/build/outputs/apk/release/expense_tracker.apk
+          test -f "$APK" || { echo "::error::expense_tracker.apk missing"; exit 1; }
           "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs "$APK" || {
             echo "::error::APK signature verification FAILED"; exit 1; }
           echo "Release APK signature verified."
@@ -73,7 +78,7 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
-          files: app/build/outputs/apk/release/*.apk
+          files: app/build/outputs/apk/release/expense_tracker.apk
           generate_release_notes: true
 
       # P10 (§18.8): publish the update manifest.
@@ -88,7 +93,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
           VERSION_NAME: ${{ github.ref_name }}
-          RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.ref_name }}/app-release.apk
+          RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.ref_name }}/expense_tracker.apk
         run: |
           set -euo pipefail
           if [ -z "$FIREBASE_TOKEN" ]; then
@@ -112,11 +117,11 @@ jobs:
       - name: Upload build provenance (P8)
         uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v1
         with:
-          subject-path: 'app/build/outputs/apk/release/*.apk'
+          subject-path: 'app/build/outputs/apk/release/expense_tracker.apk'
 
       - name: Upload release artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-apk-${{ github.ref_name }}
           retention-days: 90
-          path: app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/release/expense_tracker.apk

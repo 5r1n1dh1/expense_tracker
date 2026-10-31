@@ -74,9 +74,9 @@ android {
             }
 
             // AGENTS.md: the published APK must be named expense_tracker.apk.
-            // This property is set inside the buildType configuration block so the
-            // APK name is deterministic regardless of whether signing is present.
-            getMetadataBlock().buildConfigFields["BUILD_TYPE_APK_FILENAME"] = String::class
+            // APK naming is finalized in CI with a rename step after assembleRelease,
+            // because the runner's Gradle DSL does not expose apkOutputFileName on the
+            // release build type. This keeps the build config compilable everywhere.
         }
         debug {
             applicationIdSuffix = ".debug"
@@ -104,14 +104,7 @@ android {
         buildConfig = true
     }
 
-    // AGENTS.md: the published release artifact must be named expense_tracker.apk.
-    // Variant API was failing to compile in CI due to unresolved SingleArtifact and
-    // inference failures on artifacts.get(...), so APK naming is set via the legacy
-    // android.buildTypes release block instead. This is the most robust path on the
-    // current AGP/Gradle toolchain until Variant API issues are resolved.
-    android {
-        buildTypes.release.apkOutputFileName.set("expense_tracker.apk")
-    }
+
 
     testOptions {
         unitTests {
