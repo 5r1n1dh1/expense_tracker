@@ -22,15 +22,26 @@ class LinkAccountFlow @Inject constructor(
         data class Failed(val reason: String) : LinkResult
     }
 
-    suspend fun startLink(
-        useMultiple: Boolean = true,
-    ): LinkResult {
-        // Sign-in options are created by the injected GoogleSignInClient; this flow does
-        // not consume the lower-level GetSignInWithGoogleOption builder directly.
-        return try {
-            signInClient.handleSignInResult(Intent())
-        } catch (e: Exception) {
-            LinkResult.Failed(e.message ?: "Link failed")
+    /**
+     * Start a Google sign-in and map the outcome into a workspace linking decision.
+     *
+     * This flow deliberately keeps `data.auth` behind the injected [GoogleSignInClient] — it
+     * only sees `LinkResult`, never a Firebase or Credential Manager type.
+     */
+    suspend fun startLink(): LinkResult {
+        return when (val result = signInClient.handleSignInResult(Intent())) {
+            is GoogleSignInResult.Success -> {
+                val uid = result.user.uid
+                workspaceManager.ensureWorkspace(uid)
+                val ws = workspaceManager.currentWorkspace()
+                if (ws != null) {
+                    LinkResult.Joined(ws.id, uid)
+                } else {
+                    LinkResult.Failed("Workspace missing after ensureWorkspace")
+                }
+            }
+            is GoogleSignInResult.Cancelled -> LinkResult.Cancelled
+            is GoogleSignInResult.Failed -> LinkResult.Failed(result.reason)
         }
     }
 

@@ -21,14 +21,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.srinidhi.kharch.R
 import com.srinidhi.kharch.ui.addedit.AddEditRoute
+import com.srinidhi.kharch.ui.addedit.AddEditMode
 import com.srinidhi.kharch.ui.categories.CategoryManagerScreen
 import com.srinidhi.kharch.ui.dashboard.DashboardRoute
 import com.srinidhi.kharch.ui.dashboard.DashboardViewModel
@@ -36,7 +34,6 @@ import com.srinidhi.kharch.ui.expenses.ExpensesScreen
 import com.srinidhi.kharch.ui.glass.GlassSurface
 import com.srinidhi.kharch.ui.settings.AccountsScreen
 import com.srinidhi.kharch.ui.settings.SettingsScreen
-import com.srinidhi.kharch.ui.theme.GlassShape
 import com.srinidhi.kharch.ui.theme.GlassTier
 
 /**
@@ -86,26 +83,19 @@ fun AppNavHost(
             composable<Routes.Expenses> {
                 ExpensesScreen()
             }
-            composable(
-                route = "addEdit/{mode}/{expenseId}/{dateEpochDay}/{quickAdd}",
-        ) { backStackEntry ->
-            val args = backStackEntry.arguments ?: return@composable
-            val mode = args.getString("mode")?.let { Routes.AddEdit.Mode::valueOf }?.invoke(args.getString("mode"))
-                ?: Routes.AddEdit.Mode.NEW
-            val expenseId = args.getLong("expenseId", NavigationType.NAV_TYPE_UNSET)
-            val dateEpochDay = args.getInt("dateEpochDay", 0)
-            val quickAdd = args.getBoolean("quickAdd", false)
-            AddEditRoute(
-                mode = mode,
-                expenseId = expenseId,
-                dateEpochDay = dateEpochDay,
-                quickAdd = quickAdd,
-                onDismiss = { navController.popBackStack() },
-                onManageCategories = {
-                    navController.navigate(Routes.Categories)
-                },
-            )
-        }
+            composable<Routes.AddEdit> { backStackEntry ->
+                val route = backStackEntry.toRoute<Routes.AddEdit>()
+                AddEditRoute(
+                    mode = route.mode ?: AddEditMode.ADD,
+                    expenseId = route.expenseId,
+                    dateEpochDay = route.dateEpochDay ?: 0L,
+                    quickAdd = route.quickAdd,
+                    onDismiss = { navController.popBackStack() },
+                    onManageCategories = {
+                        navController.navigate(Routes.Categories)
+                    },
+                )
+            }
             composable<Routes.Settings> {
                 SettingsScreen()
             }

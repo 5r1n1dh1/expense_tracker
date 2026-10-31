@@ -31,6 +31,11 @@ Do not start the next phase until the previous phase's verifications pass, becau
 - `app/build.gradle.kts` only if it independently hardcodes a compileSdk (it currently reads from the version catalog)
 - Release workflow only if it needs the same compileSdk assumption (it does not)
 
+**This repo’s Phase A also included a real compile fix, because the release path must produce a working APK, not just pass AAR metadata:**
+- `app/src/main/java/com/srinidhi/kharch/ui/auth/LinkAccountFlow.kt` — `startLink()` was calling `GoogleSignInClient.handleSignInResult(Intent())` and trying to return `LinkResult`; the wired API returns `GoogleSignInResult`. Fixed to use the real Credential Manager result mapping through `WorkspaceManager.ensureWorkspace()` / `currentWorkspace()`.
+- `app/src/main/java/com/srinidhi/kharch/ui/navigation/AppNavHost.kt` — removed the leftover hand-written string route block that referenced nonexistent `NavigationType`, `Mode`, and wrong arg converters, and replaced it with a typed `composable<Routes.AddEdit>(...)` matching the in-tree `Routes.AddEdit` / `AddEditMode` API.
+- `app/src/main/java/com/srinidhi/kharch/widget/KharchWidget.kt` — fixed `ColorProvider(...)` usage: it takes a `Color` plus a `night` color, not a `Long`.
+
 **Verifications (must pass before Phase B):**
 - Latest `release.yml` run on `v1.1.0` has `Build signed release` step green.
 - Release workflow produces `app/build/outputs/apk/release/expense_tracker.apk`.
