@@ -14,8 +14,7 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import androidx.glance.GlanceTheme
-import androidx.glance.color.ColorProvider
+import androidx.glance.unit.ColorProvider
 
 class KharchWidget : GlanceAppWidget() {
     override suspend fun provideGlance(
@@ -41,8 +40,8 @@ private fun WidgetContent() {
                 text = "Kharch",
                 style = TextStyle(
                     color = ColorProvider(
-                        color = Color.Black,
-                        night = Color.White,
+                        Color.Black,
+                        Color.White,
                     ),
                 ),
             )
@@ -50,8 +49,8 @@ private fun WidgetContent() {
                 text = "Tap + to add",
                 style = TextStyle(
                     color = ColorProvider(
-                        color = Color.DarkGray,
-                        night = Color.LightGray,
+                        Color.DarkGray,
+                        Color.LightGray,
                     ),
                 ),
             )
