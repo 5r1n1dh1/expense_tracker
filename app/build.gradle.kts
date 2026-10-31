@@ -80,8 +80,7 @@ android {
             }
 
             // AGENTS.md: the published APK must be named expense_tracker.apk.
-            // Variant output is configured once, outside buildTypes, so the release
-            // artifact is deterministic regardless of whether signing is present.
+            apkOutputFileName.set("expense_tracker.apk")
         }
     }
 
@@ -104,14 +103,12 @@ android {
     }
 
     // AGENTS.md: the published release artifact must be named expense_tracker.apk.
-    // Variant API is configured with explicit types so this compiles on the current
-    // AGP/Gradle toolchain without inference failures in CI.
-    @Suppress("UNCHECKED_CAST")
-    androidComponents {
-        onVariants(selector().withBuildType("release")) { variant ->
-            val apkArtifact = variant.artifacts.get(SingleArtifact.APK::class.java)
-            apkArtifact.outputFileName.set("expense_tracker.apk")
-        }
+    // Variant API was failing to compile in CI due to unresolved SingleArtifact and
+    // inference failures on artifacts.get(...), so APK naming is set via the legacy
+    // android.buildTypes release block instead. This is the most robust path on the
+    // current AGP/Gradle toolchain until Variant API issues are resolved.
+    android {
+        buildTypes.release.apkOutputFileName.set("expense_tracker.apk")
     }
 
     testOptions {
