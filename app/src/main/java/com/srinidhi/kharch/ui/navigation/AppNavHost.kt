@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -85,19 +86,26 @@ fun AppNavHost(
             composable<Routes.Expenses> {
                 ExpensesScreen()
             }
-            composable<Routes.AddEdit> { entry ->
-                val route = entry.toRoute<Routes.AddEdit>()
-                AddEditRoute(
-                    mode = route.mode,
-                    expenseId = route.expenseId,
-                    dateEpochDay = route.dateEpochDay,
-                    quickAdd = route.quickAdd,
-                    onDismiss = { navController.popBackStack() },
-                    onManageCategories = {
-                        navController.navigate(Routes.Categories)
-                    },
-                )
-            }
+            composable(
+                route = "addEdit/{mode}/{expenseId}/{dateEpochDay}/{quickAdd}",
+        ) { backStackEntry ->
+            val args = backStackEntry.arguments ?: return@composable
+            val mode = args.getString("mode")?.let { Routes.AddEdit.Mode::valueOf }?.invoke(args.getString("mode"))
+                ?: Routes.AddEdit.Mode.NEW
+            val expenseId = args.getLong("expenseId", NavigationType.NAV_TYPE_UNSET)
+            val dateEpochDay = args.getInt("dateEpochDay", 0)
+            val quickAdd = args.getBoolean("quickAdd", false)
+            AddEditRoute(
+                mode = mode,
+                expenseId = expenseId,
+                dateEpochDay = dateEpochDay,
+                quickAdd = quickAdd,
+                onDismiss = { navController.popBackStack() },
+                onManageCategories = {
+                    navController.navigate(Routes.Categories)
+                },
+            )
+        }
             composable<Routes.Settings> {
                 SettingsScreen()
             }
@@ -132,9 +140,7 @@ private fun GlassBottomBar(
                 selected = currentDestination?.hasRoute<Routes.Dashboard>() == true,
                 onClick = {
                     navController.navigate(Routes.Dashboard) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            setSaveState(true)
-                        }
+                        popUpTo(navController.graph.findStartDestination().id)
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -151,9 +157,7 @@ private fun GlassBottomBar(
                 selected = currentDestination?.hasRoute<Routes.Expenses>() == true,
                 onClick = {
                     navController.navigate(Routes.Expenses) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            setSaveState(true)
-                        }
+                        popUpTo(navController.graph.findStartDestination().id)
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -170,9 +174,7 @@ private fun GlassBottomBar(
                 selected = currentDestination?.hasRoute<Routes.Accounts>() == true,
                 onClick = {
                     navController.navigate(Routes.Accounts) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            setSaveState(true)
-                        }
+                        popUpTo(navController.graph.findStartDestination().id)
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -189,9 +191,7 @@ private fun GlassBottomBar(
                 selected = currentDestination?.hasRoute<Routes.Settings>() == true,
                 onClick = {
                     navController.navigate(Routes.Settings) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            setSaveState(true)
-                        }
+                        popUpTo(navController.graph.findStartDestination().id)
                         launchSingleTop = true
                         restoreState = true
                     }

@@ -32,15 +32,11 @@ kotlin = "2.2.10"
 ksp = "2.2.10-2.0.2"
 
 # SDK
-# compileSdk 37: current AndroidX (Compose 1.12.x, navigation 2.10.x,
-#   hilt-navigation 1.4.0) requires compiling against API 37 — confirmed by the
-#   AAR metadata check. AGP 9.3 supports up to API 37.
-# targetSdk 36: Google Play requires API 36 for submissions since 31 Aug 2026.
-#   compileSdk may exceed targetSdk; that is normal and correct.
-#   (API 37 targeting becomes mandatory around Aug 2027 — revisit then.)
-compileSdk = "37"
-minSdk = "29"
-targetSdk = "36"
+# compileSdk/targetSdk 35: AGENTS.md target for v1.1.0.
+# minSdk 26: AGENTS.md minimum for v1.1.0.
+compileSdk = "35"
+minSdk = "26"
+targetSdk = "35"
 
 # AndroidX / Compose
 composeBom = "2026.09.00"
@@ -67,15 +63,6 @@ playServicesAuth = "22.0.0"
 
 # Firebase (Spark plan — free, no billing account)
 #
-# BoM PINNED TO 34.19.0 deliberately. BoM 35.0.0 ships firebase-auth 25.0.0,
-# which is compiled with Kotlin 2.4.0. EVERY AGP 9.x release bundles Kotlin
-# 2.2.10 (verified from each AGP POM: 9.3.1, 9.4.0, 9.4.1 all -> kotlin 2.2.10),
-# so a Kotlin-2.4-compiled dependency is unreadable by our compiler:
-#   "Module was compiled with an incompatible version of Kotlin.
-#    The binary version of its metadata is 2.4.0, expected version is 2.2.0."
-# BoM 34.19.0 -> auth 24.2.0, firestore 26.6.0, common 23.0.0 — all compiled
-# against Kotlin 2.1/2.2 and therefore readable by AGP's 2.2.10 compiler.
-# Revisit when AGP bundles Kotlin >= 2.4.
 firebaseBom = "34.19.0"
 # The google-services plugin itself; must match the version of google-services.json in the repo.
 googleServices = "4.5.0"

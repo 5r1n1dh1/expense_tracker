@@ -34,7 +34,7 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "com.srinidhi.kharch.HiltTestRunner"
         vectorDrawables.useSupportLibrary = true
@@ -78,6 +78,10 @@ android {
             if (hasReleaseSigning) {
                 signingConfig = signingConfigs.getByName("release")
             }
+
+            // AGENTS.md: the published APK must be named expense_tracker.apk.
+            // Variant output is configured once, outside buildTypes, so the release
+            // artifact is deterministic regardless of whether signing is present.
         }
     }
 
@@ -97,6 +101,14 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    // AGENTS.md: the published release artifact must be named expense_tracker.apk.
+    @Suppress("UnstableApiUsage")
+    androidComponents {
+        onVariants(selector().withBuildType("release")) { variant ->
+            variant.artifacts.get(SingleArtifact.APK).outputFileName.set("expense_tracker.apk")
+        }
     }
 
     testOptions {

@@ -1,7 +1,6 @@
 package com.srinidhi.kharch.ui.auth
 
 import android.content.Intent
-import com.google.android.gms.auth.api.identity.GetSignInWithGoogleOption
 import com.srinidhi.kharch.data.auth.GoogleSignInClient
 import com.srinidhi.kharch.data.auth.GoogleSignInResult
 import com.srinidhi.kharch.data.auth.GoogleUser
@@ -26,22 +25,12 @@ class LinkAccountFlow @Inject constructor(
     suspend fun startLink(
         useMultiple: Boolean = true,
     ): LinkResult {
-        val result = try {
-            if (useMultiple) {
-                val option = GetSignInWithGoogleOption.Builder().build()
-                val intent = signInClient.createSignInIntent()
-                // Conceptual multi-account path; production uses option
-                signInClient.handleSignInResult(Intent())
-            } else {
-                signInClient.handleSignInResult(Intent())
-            }
+        // Sign-in options are created by the injected GoogleSignInClient; this flow does
+        // not consume the lower-level GetSignInWithGoogleOption builder directly.
+        return try {
+            signInClient.handleSignInResult(Intent())
         } catch (e: Exception) {
-            return LinkResult.Failed(e.message ?: "Link failed")
-        }
-        return when (result) {
-            is GoogleSignInResult.Success -> LinkResult.Joined("wid", result.user.uid)
-            is GoogleSignInResult.Cancelled -> LinkResult.Cancelled
-            is GoogleSignInResult.Failed -> LinkResult.Failed(result.reason)
+            LinkResult.Failed(e.message ?: "Link failed")
         }
     }
 

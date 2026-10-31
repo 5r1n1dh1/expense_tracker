@@ -15,7 +15,7 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import androidx.glance.unit.ColorProvider
+import androidx.glance.color.ColorProvider
 
 class KharchWidget : GlanceAppWidget() {
     override suspend fun provideGlance(
