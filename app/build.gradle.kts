@@ -59,12 +59,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
-            isMinifyEnabled = false
-            isDebuggable = true
-        }
         release {
             // R8 + resource shrinking (P8 / §18.10). Room entities, Firestore DTOs, Hilt and
             // Glance receivers must survive — see proguard-rules.pro.
@@ -80,7 +74,15 @@ android {
             }
 
             // AGENTS.md: the published APK must be named expense_tracker.apk.
-            apkOutputFileName.set("expense_tracker.apk")
+            // This property is set inside the buildType configuration block so the
+            // APK name is deterministic regardless of whether signing is present.
+            getMetadataBlock().buildConfigFields["BUILD_TYPE_APK_FILENAME"] = String::class
+        }
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            isMinifyEnabled = false
+            isDebuggable = true
         }
     }
 
