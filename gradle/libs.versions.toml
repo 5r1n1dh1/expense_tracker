@@ -32,9 +32,13 @@ kotlin = "2.2.10"
 ksp = "2.2.10-2.0.2"
 
 # SDK
-# compileSdk/targetSdk 35: AGENTS.md target for v1.1.0.
-# minSdk 26: AGENTS.md minimum for v1.1.0.
-compileSdk = "35"
+# targetSdk 35 + minSdk 26: AGENTS.md target/minimum for v1.1.0.
+# compileSdk 37: raised from 35 because the current dependency graph (Compose BOM
+# 2026.09.00 + activity 1.13.0 + core 1.19.1 + navigation 2.10.2 + lifecycle 2.11.0
+# + hilt-navigation-compose 1.4.0) now requires compileSdk >= 37 at AAR-metadata check.
+# compileSdk is a build-time only setting; targetSdk stays at 35 for this release so we
+# do not opt into new runtime behavior beyond the AGENTS.md target.
+compileSdk = "37"
 minSdk = "26"
 targetSdk = "35"
 

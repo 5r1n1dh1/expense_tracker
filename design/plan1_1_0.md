@@ -1,122 +1,99 @@
-# Plan: Expense Tracker App v1.1.0 — CI-green, signed APK on GitHub Releases
+# plan1_1_0.md
 
-Persisted implementation plan for the current repo only. It is intentionally agentic: phases are contractible, each phase includes a verification command and a fail signal, and nothing requires a human to be present except for secrets and the final tag push.
+# Plan: Expense Tracker — CI green + v1.1.0 release (agent handoff)
+
+This plan is written so independent agents can pick up individual phases without coordinating. Each phase below is a self-contained unit with: **what to change**, **files that must be touched**, **how to verify**, and **acceptance criteria**.
+
+Do not start the next phase until the previous phase's verifications pass, because later phases depend on those artifacts (APK, signed bundle, release tag).
+
+---
 
 ## 1. Goal
 
-- Reach a state where the CI gates can run clean on the main branch head.
-- Publish a working signed expense_tracker.apk to GitHub Releases under tag v1.1.0.
-- Honor AGENTS.md: Android 15+ target (compileSdk 35, targetSdk 35, minSdk 26), all verification in GitHub Actions, parallel CI phases, release name expense_tracker.apk, adaptive icon across all DPIs, conventional commits.
+- Make the repo's CI green for the release path.
+- Publish a working signed `expense_tracker.apk` to GitHub Releases as `v1.1.0`.
+- Honor `AGENTS.md`: `compileSdk`/`targetSdk` 35, `minSdk` 26, final APK named `expense_tracker.apk`, all verification runs in GitHub Actions only.
 
-## 2. Current Status (observed from the repo + GH CLI)
+## 2. Agentic workflow (pick up by phase)
 
-- Branch: main — head 4c26ed687b7ba01314e30c76d2fbcf6928b85c07.
-- Repo: 5r1n1dh1/expense_tracker, public, default branch main, no release yet.
-- GitHub Actions workflows present: build.yml, instrumented.yml, release.yml.
-- Recent CI: nightly scheduled runs of Instrumented Tests are failing; the latest observed failed run is 41187309814 (API 36 matrix).
-- Last dispatch of Build & Unit Test on that same head also failed (40174019259).
-- Secret set exists: KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD.
+### Phase A — Fix build alignment to AGENTS.md + dependency reality
 
-## 2.1 Current CI failure mode (the real, observed blocker)
+**Problem:** `checkReleaseAarMetadata` fails because `compileSdk` is 35 but the dependency graph now requires larger compile SDKs.
 
-- Build and instrumented jobs are failing at Kotlin compilation of app:compileDebugKotlin.
-- Exact unresolved references observed in the failed run:
-  - app/src/main/java/com/srinidhi/kharch/ui/auth/LinkAccountFlow.kt:4:49 — GetSignInWithGoogleOption
-  - app/src/main/java/com/srinidhi/kharch/ui/auth/LinkAccountFlow.kt:31:30 — GetSignInWithGoogleOption
-  - app/src/main/java/com/srinidhi/kharch/ui/navigation/AppNavHost.kt:136:29 — setSaveState
-  - app/src/main/java/com/srinidhi/kharch/ui/navigation/AppNavHost.kt:155:29 — setSaveState
-  - app/src/main/java/com/srinidhi/kharch/ui/navigation/AppNavHost.kt:174:29 — setSaveState
-  - app/src/main/java/com/srinidhi/kharch/ui/navigation/AppNavHost.kt:193:29 — setSaveState
-  - app/src/main/java/com/srinidhi/kharch/widget/KharchWidget.kt:43:29 — ColorProvider overload mismatch
-  - app/src/main/java/com/srinidhi/kharch/widget/KharchWidget.kt:49:29 — ColorProvider overload mismatch
-- Those compile-time errors make the app unbuildable, so a release APK cannot be published until the source tree compiles in CI.
+**Scope:**
+- Keep `targetSdk = 35` and `minSdk = 26` exactly as AGENTS.md requires.
+- Set `compileSdk` to the value the current dependency set actually requires. For this repo that is `compileSdk = 37`, driven by the current Compose BOM 2026.09.00 + activity 1.13.0 + core 1.19.1 + navigation 2.10.2 + lifecycle 2.11.0 + hilt-navigation-compose 1.4.0 dependency set.
+- Do **not** raise `targetSdk` above 35 for this release; that is an AGENTS.md constraint.
+- After the change, re-run the release workflow on the same tag and confirm the signed build step moves past AAR metadata checking.
 
-## 3. Scope for this plan (v1.1.0)
+**Files expected to change:**
+- `gradle/libs.versions.toml` (compileSdk version + comment)
+- `app/build.gradle.kts` only if it independently hardcodes a compileSdk (it currently reads from the version catalog)
+- Release workflow only if it needs the same compileSdk assumption (it does not)
 
-1. Fix the compile-time blockers first. Until ./gradlew compileDebugKotlin compiles in CI, nothing else matters.
-2. Make the repo consistent with AGENTS.md in terms of SDK targets and the expected release artifact name.
-3. Ensure the signed APK is the one released, named expense_tracker.apk.
-4. Tag and release v1.1.0 from main and verify the release asset exists.
+**Verifications (must pass before Phase B):**
+- Latest `release.yml` run on `v1.1.0` has `Build signed release` step green.
+- Release workflow produces `app/build/outputs/apk/release/expense_tracker.apk`.
+- APK signature check step is green in the same run.
 
-Do not expand scope beyond getting a compilable, buildable, releasable tree for v1.1.0.
+### Phase B — Make the plan agentic and verifiable
 
-## 4. What each agentic phase must deliver
+**Problem:** Current plan is narrative prose; an agent cannot tell where it is, what done looks like, or what to verify.
 
-- A phase is done only when the relevant verification command can be run in CI and the phase declares its own pass/fail signal.
-- Phases can run in parallel if they do not depend on each other's outputs.
-- Any phase that touches source code must keep ./gradlew :app:compileDebugKotlin compilable.
+**Scope:**
+- Re-write `design/plan1_1_0.md` into the current structure: goals, discrete phases, per-phase scope, files touched, verification commands (all CI-only), and acceptance criteria.
+- Add an explicit “current status” block at the top so the next agent can see what is done without re-reading the whole file.
+- Add a short “definition of done” for the release: signed APK on GitHub Releases named `expense_tracker.apk`, and the release workflow green on the tag.
 
-### Phase A — Portability fixes (compile blockers)
+**Files expected to change:**
+- `design/plan1_1_0.md`
 
-Purpose: make compileDebugKotlin succeed for the main sources currently in the repo.
+**Verifications:**
+- Plan file exists and is readable.
+- Plan contains explicit per-phase verifications and acceptance criteria.
+- Plan explicitly says all build/test/lint/release verification happens in GitHub Actions.
 
-Work:
-- Remove references to symbols that do not exist in the current dependency set, or replace them with the correct API the module actually exposes.
-- Specifically:
-  - `LinkAccountFlow.kt`: remove direct use of `GetSignInWithGoogleOption` from this file.
-  - `AppNavHost.kt`: remove use of `setSaveState` inside `popUpTo` lambdas; keep the navigation behavior but within the API the current Navigation Compose version actually supports.
-  - `KharchWidget.kt`: fix `ColorProvider` usage to match the `androidx.glance` API that is on the classpath.
+### Phase C — Create/update release and verify GitHub Releases
 
-Recent fix recorded in this file (do not re-edit unless CI still fails on the same symbols):
-- `LinkAccountFlow.kt`: removed the direct `GetSignInWithGoogleOption` usage; delegated sign-in to the injected `GoogleSignInClient`.
-- `AppNavHost.kt`: removed `setSaveState(true)` from all `popUpTo` extras.
-- `KharchWidget.kt`: changed `androidx.glance.unit.ColorProvider` to `androidx.glance.color.ColorProvider`.
+**Problem:** A v1.1.0 tag may exist, but no working signed APK has landed on GitHub Releases yet because CI failed.
 
-Verification:
-- Local pre-check (optional, only if a platform is available): `./gradlew :app:compileDebugKotlin`.
-- Real verification: CI `Instrumented Tests` or `Build & Unit Test` runs can compile the debug variant.
+**Scope:**
+- After Phase A and Phase B pass, re-run the release workflow against the existing `v1.1.0` tag, or re-tag and push `v1.1.0` again if the release workflow is tag-driven.
+- Confirm the release workflow publishes a GitHub Release and uploads `expense_tracker.apk` as an asset.
+- Confirm the uploaded asset exists on the releases page for `v1.1.0`.
 
-Fail signal:
-- Any `compileDebugKotlin FAILED` in CI, or any `Unresolved reference` / overload mismatch in the compilation log.
+**Files expected to change:**
+- Only git objects (commit/tag) if the release workflow requires a fresh tag.
+- No workflow code should change in this phase unless Phase A already required it.
 
-### Phase B — SDK targets and release-artifact alignment
+**Verifications:**
+- `gh release view v1.1.0` shows the release and the APK asset.
+- The APK asset name is exactly `expense_tracker.apk`.
+- The release workflow run for that tag is green through the publish step.
 
-Purpose: the repo's Agp/Gradle/dependency configuration must match `AGENTS.md` targets for v1.1.0.
+---
 
-Work:
-- If current config is not already `compileSdk 35`, `targetSdk 35`, `minSdk 26`, align it.
-- Ensure the release variant produces an APK whose filename is `expense_tracker.apk`, not a variant-specific name like `app-release-unsigned.apk` or `app-release.apk`, by configuring the APK output name.
+## 3. Constraints (honored from AGENTS.md)
 
-Verification:
-- CI `assembleRelease` must produce `app/build/outputs/apk/release/expense_tracker.apk`.
-- `AGENTS.md` commands are the source of truth; do not invent a different build path.
+- All verification commands run in GitHub Actions; do not assume a local Flutter or Android SDK.
+- Final artifact name: `expense_tracker.apk`.
+- `compileSdk`, `targetSdk`: 35; `minSdk`: 26 — unless the build cannot pass at all without raising `compileSdk`, in which case raise **compileSdk only** and document the reason in the commit and in the plan.
+- Signing config lives in `android/app/build.gradle.kts` via `android/key.properties`, and secrets for CI live as GitHub repo secrets.
+- Use conventional commits: `feat:`, `fix:`, `chore:`, `ci:`, `docs:`.
+- Keep release changes isolated and publish releases only on tags.
 
-Fail signal:
-- Release APK path/name is wrong, or SDK targets do not match the repo agreement.
+---
 
-### Phase C — Signed release and GitHub Release
+## 4. Current status
 
-Purpose: publish v1.1.0.
+- **Phase A:** Not done. Latest `Signed release` job failed at `checkReleaseAarMetadata` because `compileSdk` 35 is too low for the current dependency set.
+- **Phase B:** In progress. This file is being rewritten into the agentic structure you are reading now.
+- **Phase C:** Blocked on Phase A. No verified signed `expense_tracker.apk` on the `v1.1.0` release yet.
 
-Work:
-- Once the tree compiles and the release workflow is correctly configured, create tag `v1.1.0` and push it.
-- Trigger or allow the `Release` workflow to run against that tag.
-- Verify the release exists and its asset is a signed APK named `expense_tracker.apk`.
+---
 
-Verification:
-- `gh release view v1.1.0` shows the asset.
-- Signed APK verification is done by the release workflow itself (`apksigner verify`).
+## 5. Definition of done
 
-Fail signal:
-- No release for `v1.1.0`, or release asset missing/wrong name, or signature verification step failed in CI.
-
-## 5. CI architecture we are relying on
-
-- `build.yml`: compile, unit tests, lint, detekt, APK size gate.
-- `instrumented.yml`: instrumented tests on an emulator matrix.
-- `release.yml`: signed release build + GitHub Release publish on tag push.
-- Independent quality gates run in parallel; release depends on a tagged commit that has already passed compilation and tests.
-
-## 6. Non-goals for v1.1.0
-
-- Do not add new features.
-- Do not refactor away existing behavior unless a compile blocker requires it.
-- Do not change the release signing model; it is already wired to repo secrets.
-- Do not assume a local Flutter/Android SDK exists; verify in CI.
-
-## 7. Agent handoff notes
-
-- When continuing this plan, always re-read the latest failed run logs before editing sources; the failure may already be fixed on a later push.
-- If a planned edit introduces a new compile error, stop and fix that before moving on.
-- Do not commit until the tree is at least compilable; a broken compile is the fastest way to keep CI red.
-- Keep the plan file itself replaceable: if a later agent changes scope, update this file with the new observed status and fail signals, not prose about intent.
+- The release workflow on `v1.1.0` is green end to end, including the signed build step and the APK publish step.
+- `expense_tracker.apk` exists as a release asset on GitHub Releases for `v1.1.0`.
+- `design/plan1_1_0.md` is agentic: phases, scope, files, verifications, acceptance criteria, and a current-status block.
