@@ -104,10 +104,13 @@ android {
     }
 
     // AGENTS.md: the published release artifact must be named expense_tracker.apk.
-    @Suppress("UnstableApiUsage")
+    // Variant API is configured with explicit types so this compiles on the current
+    // AGP/Gradle toolchain without inference failures in CI.
+    @Suppress("UNCHECKED_CAST")
     androidComponents {
         onVariants(selector().withBuildType("release")) { variant ->
-            variant.artifacts.get(SingleArtifact.APK).outputFileName.set("expense_tracker.apk")
+            val apkArtifact = variant.artifacts.get(SingleArtifact.APK::class.java)
+            apkArtifact.outputFileName.set("expense_tracker.apk")
         }
     }
 
