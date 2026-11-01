@@ -16,6 +16,7 @@ import androidx.glance.layout.padding
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import androidx.compose.ui.graphics.Color as ComposeColor
 
 class KharchWidget : GlanceAppWidget() {
     override suspend fun provideGlance(
@@ -41,7 +42,7 @@ private fun WidgetContent() {
                 text = "Kharch",
                 style = TextStyle(
                     color = ColorProvider(
-                        Color.BLACK
+                        ComposeColor.Black
                     ),
                 ),
             )
@@ -49,7 +50,7 @@ private fun WidgetContent() {
                 text = "Tap + to add",
                 style = TextStyle(
                     color = ColorProvider(
-                        Color.DKGRAY
+                        ComposeColor.DarkGray
                     ),
                 ),
             )
