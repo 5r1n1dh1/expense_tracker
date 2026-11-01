@@ -2,6 +2,7 @@ package com.srinidhi.kharch.widget
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment as ComposeAlignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
