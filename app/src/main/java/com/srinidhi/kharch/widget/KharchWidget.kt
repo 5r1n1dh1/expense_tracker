@@ -1,6 +1,5 @@
 package com.srinidhi.kharch.widget
 
-import android.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment as ComposeAlignment
 import androidx.compose.ui.unit.dp
@@ -41,8 +40,7 @@ private fun WidgetContent() {
                 text = "Kharch",
                 style = TextStyle(
                     color = ColorProvider(
-                        day = Color.BLACK,
-                        night = Color.WHITE,
+                        Color.BLACK
                     ),
                 ),
             )
@@ -50,8 +48,7 @@ private fun WidgetContent() {
                 text = "Tap + to add",
                 style = TextStyle(
                     color = ColorProvider(
-                        day = Color.DKGRAY,
-                        night = Color.LTGRAY,
+                        Color.DKGRAY
                     ),
                 ),
             )
