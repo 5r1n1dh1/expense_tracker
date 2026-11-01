@@ -69,10 +69,26 @@ jobs:
 
       - name: Verify APK is signed
         run: |
+          set -euo pipefail
           APK=app/build/outputs/apk/release/expense_tracker.apk
           test -f "$APK" || { echo "::error::expense_tracker.apk missing"; exit 1; }
-          "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs "$APK" || {
-            echo "::error::APK signature verification FAILED"; exit 1; }
+
+          # The runner image ships multiple build-tools versions and the glob form
+          # can resolve to a stub/broken wrapper in some images. Pick the newest
+          # real apksigner we can execute, then verify.
+          AUTH_APKSIGNER=
+          for dir in "$ANDROID_HOME"/build-tools/*/; do
+            candidate="${dir}apksigner"
+            if [ -x "$candidate" ] && "$candidate" --help >/dev/null 2>&1; then
+              AUTH_APKSIGNER="$candidate"
+            fi
+          done
+          if [ -z "$AUTH_APKSIGNER" ]; then
+            echo "::error::no usable apksigner found under \$ANDROID_HOME/build-tools"
+            exit 1
+          fi
+          echo "Using apksigner: $AUTH_APKSIGNER"
+          "$AUTH_APKSIGNER" verify --print-certs "$APK"
           echo "Release APK signature verified."
 
       - name: Publish GitHub Release
