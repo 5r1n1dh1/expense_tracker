@@ -67,7 +67,7 @@ playServicesAuth = "22.0.0"
 
 # Firebase (Spark plan — free, no billing account)
 #
-firebaseBom = "34.19.0"
+firebaseBom = "35.1.0"
 # The google-services plugin itself; must match the version of google-services.json in the repo.
 googleServices = "4.5.0"
 
