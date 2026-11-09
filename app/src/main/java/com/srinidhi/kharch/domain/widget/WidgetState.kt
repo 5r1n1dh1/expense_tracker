@@ -3,8 +3,8 @@ package com.srinidhi.kharch.domain.widget
 import com.srinidhi.kharch.core.model.ExpenseKind
 import com.srinidhi.kharch.core.model.MagnitudePaise
 import com.srinidhi.kharch.core.model.Money
+import com.srinidhi.kharch.core.model.YearMonth
 import com.srinidhi.kharch.core.time.Clock
-import java.time.YearMonth
 
 data class WidgetSummary(
     val monthYear: YearMonth,

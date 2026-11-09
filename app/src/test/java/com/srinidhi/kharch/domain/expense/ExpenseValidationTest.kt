@@ -221,4 +221,3 @@ class ExpenseValidationTest {
         assertEquals(60, ExpenseDraftRules.NAME_MAX_LENGTH)
     }
 }
-EOF
