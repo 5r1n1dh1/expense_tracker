@@ -13,8 +13,8 @@ import androidx.glance.layout.padding
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import androidx.glance.unit.dp
 import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.unit.dp
 
 class KharchWidget : GlanceAppWidget() {
     override suspend fun provideGlance(
