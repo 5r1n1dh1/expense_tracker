@@ -8,19 +8,29 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
+import androidx.hilt.work.HiltWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.srinidhi.kharch.data.prefs.SettingsStore
 import com.srinidhi.kharch.domain.sync.QuotaGovernor
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
 
-/** WorkManager periodic (15 min) and expedited sync worker (§6.3, §3.1). */
-class SyncWorker @Inject constructor(
-    appContext: android.content.Context,
-    params: WorkerParameters,
+/**
+ * WorkManager periodic (15 min) and expedited sync worker (§6.3, §3.1).
+ *
+ * [HiltWorker] + [AssistedInject] is required: KharchApp supplies the
+ * HiltWorkerFactory via WorkManager Configuration.Provider. Without the
+ * annotation WorkManager cannot construct this Worker and the app crashes
+ * with "Could not create Worker" on Android 15/16.
+ */
+@HiltWorker
+class SyncWorker @AssistedInject constructor(
+    @Assisted appContext: android.content.Context,
+    @Assisted params: WorkerParameters,
     private val coordinator: SyncCoordinator,
     private val settingsStore: SettingsStore,
     private val governor: QuotaGovernor,

@@ -21,13 +21,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="false"
-        android:theme="@style/Theme.Kharch.Starting"
-        tools:targetApi="35">
+        android:theme="@style/Theme.Kharch.Starting">
 
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.Kharch.Starting"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -36,17 +36,36 @@
             </intent-filter>
         </activity>
 
-        <!-- Widget entry: the translucent quick-add activity (§10) -->
+        <!-- Widget entry: the translucent quick-add activity (§10).
+             Launched only via explicit intent from the Glance widget /
+             self PendingIntent, so it must NOT be exported. Exported +
+             no intent-filter triggered One UI 9 / API 31+ ExportedActivity
+             handling and an empty taskAffinity broke the back stack. -->
         <activity
             android:name=".widget.QuickAddActivity"
-            android:exported="true"
             android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:noHistory="false"
-            android:taskAffinity=""
+            android:exported="false"
+            android:launchMode="standard"
             android:theme="@style/Theme.Kharch.Translucent" />
 
-        <!-- Hilt supplies the WorkerFactory via androidx.startup. -->
+        <!-- Glance widget receiver. Without this the widget can never be
+             placed and GlanceAppWidget.updateAll() drops updates. -->
+        <receiver
+            android:name=".widget.GlanceReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/kharch_widget_info" />
+        </receiver>
+
+        <!-- WorkManager is initialised via KharchApp (Configuration.Provider)
+             with HiltWorkerFactory, not via the default initializer. The
+             provider below removes the default initializer so androidx.startup
+             does not initialise WorkManager twice (Android 15/16 throws if
+             it tries). -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

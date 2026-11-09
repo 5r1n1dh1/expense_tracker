@@ -32,15 +32,17 @@ kotlin = "2.2.10"
 ksp = "2.2.10-2.0.2"
 
 # SDK
-# targetSdk 35 + minSdk 26: AGENTS.md target/minimum for v1.1.0.
-# compileSdk 37: raised from 35 because the current dependency graph (Compose BOM
+# compileSdk 37: required by the current dependency graph (Compose BOM
 # 2026.09.00 + activity 1.13.0 + core 1.19.1 + navigation 2.10.2 + lifecycle 2.11.0
-# + hilt-navigation-compose 1.4.0) now requires compileSdk >= 37 at AAR-metadata check.
-# compileSdk is a build-time only setting; targetSdk stays at 35 for this release so we
-# do not opt into new runtime behavior beyond the AGENTS.md target.
+# + hilt-navigation-compose 1.4.0) at AAR-metadata check.
+# targetSdk 36 = Android 16 (Galaxy S23 / One UI 9). Play (Aug 2026) and
+# Android 16 behaviour changes require targeting 36; targeting 35 opts out
+# of them and breaks on One UI 9.
+# minSdk 29 per BUILD_CONTRACT.md (§toolchain). Covers every Android 15+
+# device (API 35/36) with headroom below.
 compileSdk = "37"
-minSdk = "26"
-targetSdk = "35"
+minSdk = "29"
+targetSdk = "36"
 
 # AndroidX / Compose
 composeBom = "2026.09.00"

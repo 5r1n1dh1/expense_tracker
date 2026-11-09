@@ -14,7 +14,12 @@
     </style>
 
     <style name="Theme.Kharch.Starting" parent="Theme.Kharch">
-        <item name="android:windowBackground">@drawable/brand_gradient</item>
+        <!-- windowBackground must be a <color>, not a <shape> gradient.
+             One UI 9 / Android 16's window manager rejects/treats shape
+             windowBackgrounds inconsistently, leaving a black or stuck
+             splash. The Compose FrostedBackdrop draws the real gradient
+             on the first frame. -->
+        <item name="android:windowBackground">@color/brand_indigo</item>
     </style>
 
     <!--

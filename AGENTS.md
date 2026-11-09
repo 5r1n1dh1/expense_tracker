@@ -1,44 +1,39 @@
 # AGENTS.md
 
-Repository instructions for coding agents working on the Expense Tracker Flutter app.
+Repository instructions for coding agents working on Kharch (native Kotlin/Compose app).
 
 ## Project Overview
-- Flutter app for tracking expenses.
-- Target platform: Android (APK), Android 15+ target SDK (`targetSdk 35`).
-- Primary artifact published to GitHub Releases: `expense_tracker.apk`.
+- Native Android app (Kotlin + Compose), package `com.srinidhi.kharch` — NOT Flutter.
+- Target: Android 15+ devices (API 35+ tested). `compileSdk` 37, `targetSdk` 36 (Android 16 / Galaxy S23 One UI 9), `minSdk` 29 per `BUILD_CONTRACT.md` and `gradle/libs.versions.toml`.
+- Primary artifact: `expense_tracker.apk` (signed, on GitHub Releases).
 
-## Build / Test / Verify (run only in GitHub Actions)
-- Never assume a local Flutter SDK or Android SDK is available.
-- All verification commands must be executed in GitHub Actions, not locally.
-- Commands that must run in CI:
-  - `flutter pub get`
-  - `flutter analyze --fatal-infos`
-  - `flutter test --coverage`
-  - `flutter build apk --release`
-  - `apksigner verify build/app/outputs/apk/release/expense_tracker.apk`
+## Build / Test / Verify — GitHub Actions ONLY
+- Never run Gradle locally. CI is the only compiler.
+- All verification commands run in GitHub Actions (`.github/workflows/`):
+  - `lint` job: `./gradlew lintDebug`, `./gradlew detekt`, grep guards (no destructive migrations, no telemetry)
+  - `test` job: `./gradlew testDebugUnitTest`
+  - `build` job (needs `lint` + `test`): `./gradlew assembleDebug`, `assembleRelease`, APK size gate
+  - `instrumented.yml`: `./gradlew connectedDebugAndroidTest` on API 34/35/36 emulators (cold-launch smoke test is the S23 regression test)
+  - `release.yml`: signed release on `v*` tags + `apksigner verify`
 
 ## CI Lessons
-- CI is the source of truth for build / test / lint / release.
-- Use named parallel jobs with clear dependencies: `lint` + `test` in parallel, then `build`, then `release`.
-- Do not chain all phases in one job; split them so the independent quality gates run concurrently.
-- The final APK must be named `expense_tracker.apk`.
+- Split jobs — `lint` + `test` in parallel, then `build`, then `release`. Do not chain everything into one job; parallel jobs give fast log capture.
+- Final APK must be named `expense_tracker.apk` (rename step in `release/apk-rename.sh`).
 
 ## Android Configuration
-- `compileSdk` and `targetSdk`: 35
-- `minSdk`: 26
-- Use `flutter build apk --release` for APK generation.
-- Signing config is defined in `android/app/build.gradle.kts` via `android/key.properties`.
+- `compileSdk`: 37, `targetSdk`: 36, `minSdk`: 29 (see `gradle/libs.versions.toml` — single source of truth).
+- Release signing via `android/key.properties` / `keystore.properties` (CI-decoded, never committed).
+- AGP 9.3.1 built-in Kotlin — no `kotlin-android` plugin. Toolchain pinned in `BUILD_CONTRACT.md`.
 
 ## GitHub Releases
-- Releases are created with tags (`v*.*.*`).
-- Release assets must include the signed APK named `expense_tracker.apk`.
+- Tags `v*.*.*`, release assets include signed `expense_tracker.apk`.
 - Use `softprops/action-gh-release@v2` or `gh release create` + `gh release upload`.
 
 ## App Icon
-- Adaptive icon must support all Android DPIs.
-- Provide mipmap densities: `mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`.
-- Source art: `assets/icon_1024.png`.
+- Adaptive icon `mipmap-anydpi-v26/ic_launcher.xml` + `ic_launcher_round.xml` (monochrome included for One UI themed icons).
+- Legacy PNG fallbacks in `mipmap-mdpi…xxxhdpi` still TODO — `mipmap-anydpi-v26` only ships today.
+- Source art: `assets/icon_1024.png` (keep in sync).
 
 ## Git Conventions
-- Use conventional commit style: `feat:`, `fix:`, `chore:`, `ci:`, `docs:`.
-- Keep release changes isolated in their own commit/PR; publish releases only on tags.
+- Conventional commits: `feat:`, `fix:`, `chore:`, `ci:`, `docs:`.
+- Keep release changes isolated; publish releases only on tags.

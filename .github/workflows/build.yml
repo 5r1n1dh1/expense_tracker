@@ -14,11 +14,17 @@ concurrency:
 permissions:
   contents: read
 
+# CI is split into lint + test (parallel, fast log capture) then build
+# (needs both). This matches AGENTS.md CI Lessons: do NOT chain all
+# phases in one job — independent quality gates run concurrently so a
+# failing unit test is visible in seconds, not after a 45-minute
+# monolithic job. All Gradle runs happen here, never locally.
+
 jobs:
-  build:
-    name: Compile · Unit test · Lint · Detekt
+  lint:
+    name: Lint · Detekt · Guards
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -33,15 +39,6 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
-      # NOTE: android-actions/setup-android is deliberately NOT used. It tries to
-      # sdkmanager-install a package that no longer exists on Google's mirror
-      # ("Failed to find package 'tools'"), failing every run. The GitHub runner
-      # image already ships a full Android SDK, and the Gradle Android plugin
-      # auto-provisions any missing platform/build-tools component.
-
-      - name: Unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
-
       - name: Android lint
         run: ./gradlew lintDebug --stacktrace
 
@@ -52,7 +49,6 @@ jobs:
         run: ./gradlew detekt --stacktrace
 
       # P9 (§18.2): a destructive migration silently deletes a user's ledger.
-      # This is the single highest-severity guard in the repo.
       - name: No destructive Room migrations
         run: |
           if grep -rn "fallbackToDestructiveMigration" app/src/ ; then
@@ -61,12 +57,10 @@ jobs:
           fi
           echo "No destructive migrations found."
 
-      # P1 (§18.1): nothing may leave the device except Firestore sync + the
-      # optional user-initiated update check.
+      # P1 (§18.1): nothing may leave the device except Firestore sync +
+      # the optional user-initiated update check.
       - name: No telemetry dependencies (P1)
         run: |
-          # Match only real dependency DECLARATIONS (module = / implementation lines),
-          # not the prose in comments, which legitimately names these artifacts.
           if grep -rnE '(module|alias)\s*=\s*"[^"]*firebase-(crashlytics|analytics|perf)|implementation\(libs\.[a-z.]*(crashlytics|analytics|perf)' \
                gradle/libs.versions.toml app/build.gradle.kts ; then
             echo "::error::Telemetry dependency present. Decision P1 forbids crash/analytics/performance collection."
@@ -74,25 +68,77 @@ jobs:
           fi
           echo "No telemetry dependencies found."
 
+      - name: Upload lint & detekt reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: reports-lint-${{ github.sha }}
+          retention-days: 14
+          path: |
+            app/build/reports/lint-results*.html
+            app/build/reports/detekt/**
+
+  test:
+    name: Unit test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: reports-test-${{ github.sha }}
+          retention-days: 14
+          path: app/build/reports/tests/**
+
+  build:
+    name: Build APKs
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
       - name: Assemble debug APK
         run: ./gradlew assembleDebug --stacktrace
 
       - name: Assemble release APK
         run: ./gradlew assembleRelease --stacktrace
 
-      # The RELEASE apk is the size users actually download, and it is R8-shrunk,
-      # so that is the gate that matters. The debug apk is unshrunk and carries the
-      # Compose tooling + full symbol tables, so it is reported but not gated.
       - name: APK size gate
         run: |
           set -euo pipefail
           DEBUG_APK=$(ls app/build/outputs/apk/debug/*.apk | head -1)
-          # The release variant is unsigned on PRs (no keystore), so the filename is
-          # app-release-unsigned.apk; the signed release job produces app-release.apk.
           RELEASE_APK=$(ls app/build/outputs/apk/release/*.apk | head -1)
           echo "debug:   $(du -k "$DEBUG_APK" | cut -f1) KB   ($DEBUG_APK)"
           echo "release: $(du -k "$RELEASE_APK" | cut -f1) KB   ($RELEASE_APK)"
-
           RELEASE_KB=$(du -k "$RELEASE_APK" | cut -f1)
           if [ "$RELEASE_KB" -gt 8192 ]; then
             echo "::error::Release APK is ${RELEASE_KB} KB, over the 8192 KB budget"
@@ -100,8 +146,6 @@ jobs:
           fi
           echo "Release APK within budget."
 
-      # Upload only — never downloaded locally (C2). Inspect with:
-      #   gh run view <id>
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -110,14 +154,10 @@ jobs:
           if-no-files-found: error
           path: app/build/outputs/apk/**/*.apk
 
-      - name: Upload test & analysis reports
+      - name: Upload mapping (release)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: reports-${{ github.sha }}
+          name: mapping-${{ github.sha }}
           retention-days: 14
-          path: |
-            app/build/reports/tests/**
-            app/build/reports/lint-results*.html
-            app/build/reports/detekt/**
-            app/build/outputs/mapping/**
+          path: app/build/outputs/mapping/**
