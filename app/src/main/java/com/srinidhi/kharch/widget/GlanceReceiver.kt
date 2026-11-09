@@ -8,6 +8,6 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
  * Without it the widget cannot be placed on a home screen and Glance
  * updates are silently dropped.
  */
-class GlanceReceiver : GlanceAppWidgetReceiver<KharchWidget>() {
-    override val appWidget: KharchWidget = KharchWidget()
+class GlanceReceiver : GlanceAppWidgetReceiver() {
+    override val glanceAppWidget: KharchWidget = KharchWidget()
 }
