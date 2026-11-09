@@ -5,16 +5,21 @@ import com.srinidhi.kharch.core.model.Category
 import com.srinidhi.kharch.core.model.Expense
 import com.srinidhi.kharch.core.time.Clock
 import com.srinidhi.kharch.core.time.SystemClock
+import com.google.firebase.firestore.FirebaseFirestore
 import com.srinidhi.kharch.data.local.AppDatabase
 import com.srinidhi.kharch.data.local.CategoryDao
 import com.srinidhi.kharch.data.local.ExpenseDao
+import com.srinidhi.kharch.data.local.OutboxDao
 import com.srinidhi.kharch.data.local.WorkspaceDao
 import com.srinidhi.kharch.data.prefs.SettingsStore
+import com.srinidhi.kharch.data.remote.FirestoreRemoteDataSource
+import com.srinidhi.kharch.data.remote.RemoteLedger
 import com.srinidhi.kharch.data.repository.LocalExpenseRepository
 import com.srinidhi.kharch.data.repository.RoomCategoryCatalog
 import com.srinidhi.kharch.domain.LedgerQuery
 import com.srinidhi.kharch.domain.expense.CategoryCatalog
 import com.srinidhi.kharch.domain.expense.ExpenseRepository
+import com.srinidhi.kharch.domain.sync.QuotaGovernor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -97,4 +102,19 @@ object LedgerModule {
 
     @Provides
     fun provideWorkspaceDao(database: AppDatabase): WorkspaceDao = database.workspaceDao()
+
+    @Provides
+    fun provideOutboxDao(database: AppDatabase): OutboxDao = database.outboxDao()
+
+    @Provides
+    @Singleton
+    fun provideQuotaGovernor(clock: Clock): QuotaGovernor = QuotaGovernor(clock)
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideRemoteLedger(dataSource: FirestoreRemoteDataSource): RemoteLedger = dataSource
 }

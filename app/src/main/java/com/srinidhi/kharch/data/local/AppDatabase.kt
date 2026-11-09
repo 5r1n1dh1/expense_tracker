@@ -40,6 +40,8 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun workspaceDao(): WorkspaceDao
 
+    abstract fun outboxDao(): OutboxDao
+
     companion object {
         /**
          * Schema version. Keep this in step with the literal in the `@Database` annotation
