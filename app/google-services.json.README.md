@@ -1,39 +1,49 @@
 # Firebase → Android → `google-services.json`
 
-# D3: this file IS committed (it is not a secret — access is gated by package
-# name and signing SHA). Committing it keeps local and CI builds byte-identical.
-#
-# Wired to the Spark (free) plan project:
-#   project_id     = expense-tracker-1013e
-#   project_number = 492411597447
-#   clients        = com.srinidhi.kharch (release), com.srinidhi.kharch.debug (debug)
-#
-# The debug client is required: without it `com.google.gms.google-services`
-# fails with "No matching client found for package name" — every CI build and
-# an emulator test uses the debug variant (applicationIdSuffix = ".debug").
+Wired to the Spark (free) plan project **`expense-tracker-1013e`**
+(`project_number = 492411597447`). This file IS committed (it is not a secret —
+access is gated by package name + signing SHA, decision D3). Committing it
+keeps local and CI builds byte-identical.
 
-## What is still missing before sign-in / sync work end to end
+Bundled OAuth setup:
 
-The downloaded `google-services.json` has an empty `oauth_client` list, so
-Google sign-in and the stored token cannot mint credentials yet. To finish:
+- Both Android clients are present, each with the **debug keystore**
+  certificate hash (`c61af53d…`):
 
-1. Firebase console → Authentication → Sign-in method → enable **Google**.
-2. Firebase console → Project settings → Your apps → both apps → add:
-   - Debug keystore SHA-1:   C6:1A:F5:3D:0B:B6:14:29:BA:3E:18:56:A8:F8:78:92:77:68:A7:5C
-     Debug keystore SHA-256: 96:65:2A:23:CE:55:5D:6A:E1:B7:24:42:CE:C9:1D:46:EC:D1:DA:50:9B:5A:7F:60:18:F6:1D:67:0E:19:F4:DA
-   - Release keystore SHA-1 and SHA-256 (the release keystore lives only in the
-     CI secrets — keep its fingerprint registered on the same Google app).
-3. Re-download `google-services.json` — it will now contain `oauth_client`
-   entries (client_type 3 = web SDK configuration client).
-4. Create the Firestore database (single free database per project) and deploy
-   rules + indexes:
-       firebase deploy --only firestore:rules,firestore:indexes
-5. Update `app/src/main/res/values/strings.xml` `default_web_client_id` with the
-   **Web SDK configuration Web client ID** (Authentication → Sign-in method →
-   Google → Web SDK configuration). Update `strings.xml` and
-   `google-services.json` **together** — the main source set's `strings.xml`
-   wins over the plugin-generated resource.
-6. Re-build via the normal CI release flow on a new tag.
+      com.srinidhi.kharch        (release package)
+      com.srinidhi.kharch.debug  (debug package — every CI build + emulator test)
 
-Until steps 1–5 are done the app launches and the ledger works fully offline,
-but Google sign-in and Firestore sync cannot complete.
+- The shared **type-3 Web SDK configuration** client drives Credential Manager:
+
+      492411597447-b0g3i00cletno0dupt91uti4pcihue2t.apps.googleusercontent.com
+
+  `app/src/main/res/values/strings.xml` keeps the same value in
+  `default_web_client_id` — the main source set wins over the plugin-generated
+  resource, so the two MUST be updated together.
+
+## What is still missing before sign-in works on the RELEASE build
+
+The Play/release `expense_tracker.apk` is signed by the release keystore
+(`android/KEYSTORE_BASE64` CI secret). Its SHA-1 is NOT yet registered on the
+`com.srinidhi.kharch` Firebase app — the downloaded config carries only the
+debug certificate hash. To make Google sign-in work on installed release builds:
+
+1. Get the release keystore fingerprints (decode the secret locally, or read
+   them from any release APK's signature — no keystore needed for this):
+
+       apksigner verify --print-certs expense_tracker.apk
+
+   or, with the keystore:
+
+       keytool -list -v -keystore release.jks -storepass <password>
+
+2. Firebase console → Project settings → Your apps → `com.srinidhi.kharch`
+   → add the release SHA-1 and SHA-256.
+3. Re-download `google-services.json` and replace this file (the debug and
+   `.debug` clients stay identical until the debug keystore changes).
+4. Update `app/src/main/res/values/strings.xml` again **only if** the Web
+   client ID changed (it normally does not).
+
+Until step 2–3 are done the debug variant signs in; the release APK is
+correctly built but sign-in there fails with a developer error on the
+`default_web_client_id` / certificate mismatch.
