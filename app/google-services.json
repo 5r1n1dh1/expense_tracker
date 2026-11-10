@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "000000000000",
-    "project_id": "kharch-placeholder",
-    "storage_bucket": "kharch-placeholder.appspot.com"
+    "project_number": "492411597447",
+    "project_id": "expense-tracker-1013e",
+    "storage_bucket": "expense-tracker-1013e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+        "mobilesdk_app_id": "1:492411597447:android:f07121be209862231c3e22",
         "android_client_info": {
           "package_name": "com.srinidhi.kharch"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyPLACEHOLDER-replace-with-real-key"
+          "current_key": "AIzaSyAfz6HtZmQz0Mc1Du35PovcaeFWc2dOQEg"
         }
       ],
       "services": {
@@ -26,7 +26,7 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:000000000000:android:0000000000000000000001",
+        "mobilesdk_app_id": "1:492411597447:android:beeb918757c354401c3e22",
         "android_client_info": {
           "package_name": "com.srinidhi.kharch.debug"
         }
@@ -34,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyPLACEHOLDER-replace-with-real-key"
+          "current_key": "AIzaSyAfz6HtZmQz0Mc1Du35PovcaeFWc2dOQEg"
         }
       ],
       "services": {

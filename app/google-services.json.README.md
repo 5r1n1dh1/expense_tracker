@@ -1,47 +1,39 @@
 # Firebase → Android → `google-services.json`
-#
-# D3: this file IS committed (it is not a secret — access is gated by package name
-# and signing SHA). Committing it keeps local and CI builds byte-identical.
-#
-# The file currently in this directory is a PLACEHOLDER so the project compiles and CI
-# is green before a real Firebase project exists. It contains NO real credentials.
-#
-# ## When you create the Firebase project (one-time, Phase 0/2)
-#
-# 1. https://console.firebase.google.com → create a project.
-# 2. **Stay on the Spark (free) plan. Do NOT enable billing.** (D2)
-#    - Do NOT create a Cloud Storage bucket — it has required a linked billing account
-#      since 3 Feb 2026 even at zero usage.
-#    - Do NOT enable Blaze, Cloud Functions, App Check/Play Integrity, or Firestore TTL.
-# 3. Add an Android app with package name:
-#        com.srinidhi.kharch
-#    and optionally a second app for com.srinidhi.kharch.debug
-#    (D11: the package name is registered in Firebase and is effectively permanent).
-# 4. Download the real google-services.json and **replace** the placeholder in
-#    `app/google-services.json`.
-# 5. Add your debug and release SHA-1 fingerprints under Project Settings → Your apps
-#    (needed for Google Sign-In).
-# 6. Authentication → Sign-in method → enable **Google**.
-# 7. Create a Firestore database in your region. The free tier covers exactly one
-#    database per project.
-# 8. Deploy rules + indexes (Phase 3):
-#        firebase deploy --only firestore:rules,firestore:indexes
-#
-# ## Verify the Spark plan stays at ₹0
-# The app uses ONLY: firebase-auth, firebase-firestore, firebase-common.
-# It deliberately does NOT depend on Crashlytics / Analytics / Performance Monitoring
-# (decision P1). A CI guard (`build.yml` → "No telemetry dependencies") fails the build
-# if a telemetry SDK is ever added.
-## Update 2026-10-12 — the debug client
 
-Applying `com.google.gms.google-services` surfaced a real gap: the debug variant's
-`applicationIdSuffix = ".debug"` means its `applicationId` is
-`com.srinidhi.kharch.debug`, and the plugin **fails the build** unless
-google-services.json has a client for that id too:
+# D3: this file IS committed (it is not a secret — access is gated by package
+# name and signing SHA). Committing it keeps local and CI builds byte-identical.
+#
+# Wired to the Spark (free) plan project:
+#   project_id     = expense-tracker-1013e
+#   project_number = 492411597447
+#   clients        = com.srinidhi.kharch (release), com.srinidhi.kharch.debug (debug)
+#
+# The debug client is required: without it `com.google.gms.google-services`
+# fails with "No matching client found for package name" — every CI build and
+# an emulator test uses the debug variant (applicationIdSuffix = ".debug").
 
-    No matching client found for package name 'com.srinidhi.kharch.debug'
+## What is still missing before sign-in / sync work end to end
 
-So the placeholder now carries two clients. When you replace it with the real file from
-the Firebase console, register **both** applications there and keep both clients in the
-downloaded JSON — the debug one is what runs every CI build, an emulator test, and any
-`assembleDebug` you do locally.
+The downloaded `google-services.json` has an empty `oauth_client` list, so
+Google sign-in and the stored token cannot mint credentials yet. To finish:
+
+1. Firebase console → Authentication → Sign-in method → enable **Google**.
+2. Firebase console → Project settings → Your apps → both apps → add:
+   - Debug keystore SHA-1:   C6:1A:F5:3D:0B:B6:14:29:BA:3E:18:56:A8:F8:78:92:77:68:A7:5C
+     Debug keystore SHA-256: 96:65:2A:23:CE:55:5D:6A:E1:B7:24:42:CE:C9:1D:46:EC:D1:DA:50:9B:5A:7F:60:18:F6:1D:67:0E:19:F4:DA
+   - Release keystore SHA-1 and SHA-256 (the release keystore lives only in the
+     CI secrets — keep its fingerprint registered on the same Google app).
+3. Re-download `google-services.json` — it will now contain `oauth_client`
+   entries (client_type 3 = web SDK configuration client).
+4. Create the Firestore database (single free database per project) and deploy
+   rules + indexes:
+       firebase deploy --only firestore:rules,firestore:indexes
+5. Update `app/src/main/res/values/strings.xml` `default_web_client_id` with the
+   **Web SDK configuration Web client ID** (Authentication → Sign-in method →
+   Google → Web SDK configuration). Update `strings.xml` and
+   `google-services.json` **together** — the main source set's `strings.xml`
+   wins over the plugin-generated resource.
+6. Re-build via the normal CI release flow on a new tag.
+
+Until steps 1–5 are done the app launches and the ledger works fully offline,
+but Google sign-in and Firestore sync cannot complete.
