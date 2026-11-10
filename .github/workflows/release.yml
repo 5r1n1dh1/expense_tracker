@@ -8,6 +8,9 @@ on:
 
 permissions:
   contents: write
+  # Required by actions/attest-build-provenance (it requests an OIDC token).
+  id-token: write
+  attestations: write
 
 jobs:
   release:
