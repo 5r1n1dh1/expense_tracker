@@ -6,6 +6,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,6 +25,7 @@ import org.junit.runner.RunWith
  *
  * Runs in CI on API 34/35/36 (instrumented.yml). No local Gradle.
  */
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class MainActivityLaunchTest {
 
