@@ -145,8 +145,11 @@ jobs:
           set -euo pipefail
           DEBUG_APK=$(ls app/build/outputs/apk/debug/*.apk | head -1)
           RELEASE_APK=$(ls app/build/outputs/apk/release/*.apk | head -1)
-          echo "debug:   $(du -k "$DEBUG_APK" | cut -f1) KB   ($DEBUG_APK)"
-          echo "release: $(du -k "$RELEASE_APK" | cut -f1) KB   ($RELEASE_APK)"
+          DEBUG_KB=$(( $(stat -c%s "$DEBUG_APK") / 1024 ))
+          RELEASE_KB=$(( $(stat -c%s "$RELEASE_APK") / 1024 ))
+          echo "debug:   ${DEBUG_KB} KB   ($DEBUG_APK)"
+          echo "release: ${RELEASE_KB} KB   ($RELEASE_APK)"
+          ls -la "$DEBUG_APK" "$RELEASE_APK"
           echo "---- largest entries in release APK (uncompressed) ----"
           python3 - "$RELEASE_APK" << 'PYEOF'
           import sys, zipfile
@@ -163,7 +166,6 @@ jobs:
               print(f"{size / 1024:10.1f} KB  {name}")
           print(f"TOTAL uncompressed: {total / 1024:.1f} KB across {len(rows)} entries")
           PYEOF
-          RELEASE_KB=$(du -k "$RELEASE_APK" | cut -f1)
           if [ "$RELEASE_KB" -gt 8192 ]; then
             echo "::error::Release APK is ${RELEASE_KB} KB, over the 8192 KB budget"
             exit 1
