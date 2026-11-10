@@ -3,7 +3,9 @@ package com.srinidhi.kharch.ui.glass
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.Shader
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,14 +15,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import com.srinidhi.kharch.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
@@ -80,8 +83,15 @@ object Frost {
  * posture is to touch as little of the user's data as possible. The brand
  * gradient is always available and always looks intentional.
  */
+/* Brand gradient stops. Compose paints the brand gradient inline, mirroring
+   values/colors.xml (@color/brand_indigo → @color/brand_teal). */
+private val BRAND_INDIGO = Color(0xFF4F5DD3)
+private val BRAND_TEAL = Color(0xFF2BB3A3)
+private const val BRAND_INDIGO_ARGB: Int = 0xFF4F5DD3.toInt()
+private const val BRAND_TEAL_ARGB: Int = 0xFF2BB3A3.toInt()
+
 enum class FrostSource {
-    /** The bundled brand gradient. The only source, and the only default. */
+    /** The bundled brand gradient (painted inline) — the only source, and the only default. */
     BrandGradient,
 }
 
@@ -140,11 +150,19 @@ fun FrostedBackdrop(
 ) {
     val backdrop = rememberFrostedBackdrop(source)
     Box(modifier = modifier) {
-        Image(
-            painter = painterResource(R.drawable.brand_gradient),
-            contentDescription = null,
-            modifier = Modifier.matchParentSize(),
-            contentScale = ContentScale.Crop,
+        // Always painted, never conditionally: brand_gradient.xml is a <shape>
+        // drawable and Compose's painterResource cannot inflate shape drawables,
+        // so the gradient is drawn directly with drawWithContent.
+        Box(
+            modifier = Modifier.matchParentSize().drawWithContent {
+                drawRect(
+                    Brush.linearGradient(
+                        colors = listOf(BRAND_INDIGO, BRAND_TEAL),
+                        start = Offset.Zero,
+                        end = Offset(size.width, size.height),
+                    ),
+                )
+            },
         )
         if (backdrop != null) {
             Image(
@@ -234,12 +252,22 @@ private fun Canvas.drawBackdropSource(context: Context, source: FrostSource, wid
     // Opaque black underneath: a frosted panel with a transparent hole in it
     // would let raw content show through, which is never what we want.
     drawColor(android.graphics.Color.BLACK)
-    val drawable = when (source) {
-        FrostSource.BrandGradient -> context.drawableOrNull(R.drawable.brand_gradient)
-    } ?: return
-    drawable.setBounds(0, 0, width, height)
-    drawable.draw(this)
+    when (source) {
+        FrostSource.BrandGradient -> {
+            // Paint the brand gradient directly: brand_gradient.xml is a <shape>
+            // drawable and, like the Compose path, should not depend on it here.
+            val paint = Paint().apply {
+                shader = LinearGradient(
+                    0f,
+                    0f,
+                    width.toFloat(),
+                    height.toFloat(),
+                    BRAND_INDIGO_ARGB,
+                    BRAND_TEAL_ARGB,
+                    Shader.TileMode.CLAMP,
+                )
+            }
+            drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+        }
+    }
 }
-
-private fun Context.drawableOrNull(resId: Int): Drawable? =
-    runCatching { getDrawable(resId) }.getOrNull()
