@@ -32,14 +32,16 @@ class AddEditSheetTest {
 
     @Test
     fun `canSave requires validity loading completion and no save in flight`() {
-        val base = AddEditUiState(loading = false, saving = false)
-
-        assertFalse(base.canSave)
-
-        val valid = base.copy(
-            validation = com.srinidhi.kharch.domain.expense.ExpenseDraftValidation.Valid,
+        val invalid = AddEditUiState(
+            loading = false,
+            saving = false,
+            validation = com.srinidhi.kharch.domain.expense.ExpenseDraftValidation(
+                setOf(com.srinidhi.kharch.domain.expense.ExpenseDraftError.AMOUNT_REQUIRED),
+            ),
         )
-        // Still no category, so not valid; force validity by constructing a valid validation.
+
+        assertFalse(invalid.canSave)
+
         val ready = AddEditUiState(
             loading = false,
             saving = false,
