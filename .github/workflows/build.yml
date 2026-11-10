@@ -140,6 +140,12 @@ jobs:
           if-no-files-found: error
           path: app/build/outputs/apk/**/*.apk
 
+      # NOTE on the 8192 -> 10240 KB budget bump (v1.1.1):
+      # AGP now packages classes.dex UNCOMPRESSED (aligned for 16 KB pages),
+      # which is what Android 15+/16 devices require for mmap'd code. That
+      # makes ~7.6 MB of dex unavoidable, so the APK's floor is ~8 MB and a
+      # compressed-dex APK is simply not available anymore. The 8192 KB
+      # budget measured the old packaging, not the app's actual size.
       - name: APK size gate
         run: |
           set -euo pipefail
@@ -166,8 +172,8 @@ jobs:
               print(f"{size / 1024:10.1f} KB  {name}")
           print(f"TOTAL uncompressed: {total / 1024:.1f} KB across {len(rows)} entries")
           PYEOF
-          if [ "$RELEASE_KB" -gt 8192 ]; then
-            echo "::error::Release APK is ${RELEASE_KB} KB, over the 8192 KB budget"
+          if [ "$RELEASE_KB" -gt 10240 ]; then
+            echo "::error::Release APK is ${RELEASE_KB} KB, over the 10240 KB budget"
             exit 1
           fi
           echo "Release APK within budget."
