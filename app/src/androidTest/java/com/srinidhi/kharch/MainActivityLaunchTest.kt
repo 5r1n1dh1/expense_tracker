@@ -3,7 +3,7 @@ package com.srinidhi.kharch
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.waitUntilExists
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
 import org.junit.Test
@@ -32,16 +32,28 @@ class MainActivityLaunchTest {
     @Test
     fun `cold launch reaches dashboard first frame`() {
         composeRule.waitForIdle()
-        composeRule.onNodeWithTag("dashboard-chart-frame")
-            .waitUntilExists(timeoutMillis = 10_000)
-            .assertIsDisplayed()
+        composeRule.waitUntil(
+            conditionDescription = "dashboard chart frame visible",
+            timeoutMillis = 10_000,
+        ) {
+            composeRule.onAllNodesWithTag("dashboard-chart-frame")
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeRule.onNodeWithTag("dashboard-chart-frame").assertIsDisplayed()
     }
 
     @Test
     fun `cold launch reaches category frame`() {
         composeRule.waitForIdle()
-        composeRule.onNodeWithTag("dashboard-category-frame")
-            .waitUntilExists(timeoutMillis = 10_000)
-            .assertIsDisplayed()
+        composeRule.waitUntil(
+            conditionDescription = "dashboard category frame visible",
+            timeoutMillis = 10_000,
+        ) {
+            composeRule.onAllNodesWithTag("dashboard-category-frame")
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeRule.onNodeWithTag("dashboard-category-frame").assertIsDisplayed()
     }
 }

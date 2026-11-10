@@ -132,20 +132,6 @@ jobs:
       - name: Assemble release APK
         run: ./gradlew assembleRelease --stacktrace
 
-      - name: APK size gate
-        run: |
-          set -euo pipefail
-          DEBUG_APK=$(ls app/build/outputs/apk/debug/*.apk | head -1)
-          RELEASE_APK=$(ls app/build/outputs/apk/release/*.apk | head -1)
-          echo "debug:   $(du -k "$DEBUG_APK" | cut -f1) KB   ($DEBUG_APK)"
-          echo "release: $(du -k "$RELEASE_APK" | cut -f1) KB   ($RELEASE_APK)"
-          RELEASE_KB=$(du -k "$RELEASE_APK" | cut -f1)
-          if [ "$RELEASE_KB" -gt 8192 ]; then
-            echo "::error::Release APK is ${RELEASE_KB} KB, over the 8192 KB budget"
-            exit 1
-          fi
-          echo "Release APK within budget."
-
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -153,6 +139,36 @@ jobs:
           retention-days: 14
           if-no-files-found: error
           path: app/build/outputs/apk/**/*.apk
+
+      - name: APK size gate
+        run: |
+          set -euo pipefail
+          DEBUG_APK=$(ls app/build/outputs/apk/debug/*.apk | head -1)
+          RELEASE_APK=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          echo "debug:   $(du -k "$DEBUG_APK" | cut -f1) KB   ($DEBUG_APK)"
+          echo "release: $(du -k "$RELEASE_APK" | cut -f1) KB   ($RELEASE_APK)"
+          echo "---- largest entries in release APK (uncompressed) ----"
+          python3 - "$RELEASE_APK" << 'PYEOF'
+          import sys, zipfile
+          z = zipfile.ZipFile(sys.argv[1])
+          total = 0
+          rows = []
+          for info in z.infolist():
+              if info.is_dir():
+                  continue
+              rows.append((info.file_size, info.filename))
+              total += info.file_size
+          rows.sort(reverse=True)
+          for size, name in rows[:25]:
+              print(f"{size / 1024:10.1f} KB  {name}")
+          print(f"TOTAL uncompressed: {total / 1024:.1f} KB across {len(rows)} entries")
+          PYEOF
+          RELEASE_KB=$(du -k "$RELEASE_APK" | cut -f1)
+          if [ "$RELEASE_KB" -gt 8192 ]; then
+            echo "::error::Release APK is ${RELEASE_KB} KB, over the 8192 KB budget"
+            exit 1
+          fi
+          echo "Release APK within budget."
 
       - name: Upload mapping (release)
         if: always()
