@@ -30,7 +30,7 @@ class MainActivityLaunchTest {
     val composeRule = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun `cold launch reaches dashboard first frame`() {
+    fun coldLaunchReachesDashboardFirstFrame() {
         composeRule.waitForIdle()
         composeRule.waitUntil(
             conditionDescription = "dashboard chart frame visible",
@@ -44,7 +44,7 @@ class MainActivityLaunchTest {
     }
 
     @Test
-    fun `cold launch reaches category frame`() {
+    fun coldLaunchReachesCategoryFrame() {
         composeRule.waitForIdle()
         composeRule.waitUntil(
             conditionDescription = "dashboard category frame visible",
