@@ -1,0 +1,6 @@
+{
+  "firestore": {
+    "database": "ai-studio-android-expenset-fde13ac1-31d7-44df-ae05-8f7ea9d985aa",
+    "rules": "firestore.rules"
+  }
+}

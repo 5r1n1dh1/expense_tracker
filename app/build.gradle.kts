@@ -44,6 +44,12 @@ android {
     }
 
     signingConfigs {
+        create("debugConfig") {
+            storeFile = file("${rootDir}/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         if (hasReleaseSigning) {
             create("release") {
                 storeFile = file(keystoreProps.getProperty("storeFile"))
@@ -79,7 +85,7 @@ android {
             // release build type. This keeps the build config compilable everywhere.
         }
         debug {
-            applicationIdSuffix = ".debug"
+            signingConfig = signingConfigs.getByName("debugConfig")
             versionNameSuffix = "-debug"
             isMinifyEnabled = false
             isDebuggable = true

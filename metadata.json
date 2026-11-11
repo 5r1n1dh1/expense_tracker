@@ -1,0 +1,8 @@
+{
+  "name": "Kharch",
+  "description": "Native Android offline-first expense tracker with cloud sync, glass UI, and dashboard analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

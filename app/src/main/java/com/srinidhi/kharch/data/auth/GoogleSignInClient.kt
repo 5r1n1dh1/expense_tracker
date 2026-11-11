@@ -6,7 +6,6 @@ import android.content.Intent
 import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -65,7 +64,7 @@ class GoogleSignInClient internal constructor(
      */
     suspend fun handleSignInResult(intent: Intent): GoogleSignInResult {
         val credential = signInClient.getSignInCredentialFromIntent(intent)
-        val idToken = credential.id
+        val idToken = credential.googleIdToken ?: credential.id
         if (idToken.isNullOrEmpty()) {
             return GoogleSignInResult.Failed("No ID token in sign-in credential")
         }
@@ -91,6 +90,11 @@ class GoogleSignInClient internal constructor(
      */
     suspend fun signOut() {
         FirebaseAuth.getInstance().signOut()
+        try {
+            signInClient.signOut().awaitTask()
+        } catch (_: Exception) {
+            // Sign out from Firebase succeeded; ignore Play Services local cache error
+        }
     }
 
     /** Converts a Firebase user into the workspace-facing [GoogleUser] (Firebase types stay in this file). */
@@ -102,7 +106,6 @@ class GoogleSignInClient internal constructor(
     )
 
     companion object {
-        private const val UNRECOGNISED_CREDENTIAL = "Credential Manager returned an unusable credential"
         private const val MISSING_FIREBASE_USER = "Firebase returned no user for the Google credential"
 
         /**

@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import com.srinidhi.kharch.R
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -102,13 +103,30 @@ fun AppNavHost(
                 SettingsScreen()
             }
             composable<Routes.Accounts> {
-                AccountsScreen()
+                val viewModel: com.srinidhi.kharch.ui.settings.AccountsViewModel = hiltViewModel()
+                val state by viewModel.uiState.collectAsStateWithLifecycle()
+                AccountsScreen(
+                    state = state,
+                    onLinkAccount = { viewModel.onLinkAccountClicked() },
+                    onRemoveAccount = { uid -> viewModel.removeAccount(uid) },
+                    onChoiceJoin = { viewModel.joinLedger() },
+                    onChoiceStartSeparate = { viewModel.startSeparateLedger() },
+                    onChoiceDismiss = { viewModel.dismissChoice() },
+                )
             }
             composable<Routes.Categories> {
                 CategoryManagerScreen()
             }
             composable<Routes.Auth> {
-                Text(text = "Auth")
+                val authViewModel: com.srinidhi.kharch.ui.auth.AuthViewModel = hiltViewModel()
+                val authState by authViewModel.uiState.collectAsStateWithLifecycle()
+                com.srinidhi.kharch.ui.auth.AuthSetupScreen(
+                    state = authState,
+                    onSignIn = { launcher -> authViewModel.startSignIn(launcher) },
+                    onSignInResult = { intent -> authViewModel.handleSignInResult(intent) },
+                    onCompleteSetup = { user, name -> authViewModel.completeSetup(user, name) },
+                    onSignOut = { authViewModel.signOut() },
+                )
             }
         }
     }

@@ -1,32 +1,27 @@
 package com.srinidhi.kharch
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.srinidhi.kharch.ui.BuildInfo
+import com.srinidhi.kharch.ui.auth.AuthSetupScreen
+import com.srinidhi.kharch.ui.auth.AuthUiState
+import com.srinidhi.kharch.ui.auth.AuthViewModel
 import com.srinidhi.kharch.ui.motion.ProvideHaptics
+import com.srinidhi.kharch.ui.theme.currentGlassTheme
 
 /**
  * The app shell.
- *
- * This file is a **fixed seam**, not a feature. Two agents were building features
- * against this app in parallel — sign-in (Phase 2/3) and the expense navigation
- * (Phase 5) — and both needed the same `setContent { … }` body. Left alone they
- * would each have rewritten it, which is a guaranteed collision.
- *
- * The shell is now three nested layers with explicit owners:
- *
- * - **Owned by me (the orchestrator)** — the wrapper itself, [KharchAuthGate], and
- *   the markers below. Do not delete or rename them.
- * - **[ProvideHaptics]** — wrapped here so every screen below it reads a single
- *   controller. Phase 5 wires the user setting; that is one parameter, not this file.
- * - **[nav] region** — the ONLY place Phase 5's navigation belongs.
- *
- * To add a destination: put it inside the `nav()` lambda. Do not restructure the
- * wrapper, and do not add a second `KharchTheme`.
  */
 @Composable
 fun KharchRoot(
-    // ── Region: NAVIGATION (Phase 5 owns everything inside nav) ──────────────────
     nav: @Composable () -> Unit = { Text(text = "Kharch ${BuildInfo.VERSION_NAME}") },
     hapticsEnabled: Boolean = true,
 ) {
@@ -39,14 +34,36 @@ fun KharchRoot(
 
 /**
  * Sign-in gate: renders its [nav] content once a Google account is resolved,
- * onboarding otherwise.
- *
- * Phase 2/3 fills in the body of [com.srinidhi.kharch.ui.auth] and swaps this out.
- * Until then every screen still renders, so Phase 5 and Phase 6 UI work is not
- * blocked on auth — and, crucially, nothing has to modify this file to get a
- * working UI out of CI.
+ * onboarding and ledger setup otherwise.
  */
 @Composable
-fun KharchAuthGate(nav: @Composable () -> Unit) {
-    nav()
+fun KharchAuthGate(
+    nav: @Composable () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val glass = currentGlassTheme()
+
+    when (val state = uiState) {
+        is AuthUiState.Authenticated -> {
+            nav()
+        }
+        is AuthUiState.Unauthenticated, is AuthUiState.SetupNeeded -> {
+            AuthSetupScreen(
+                state = state,
+                onSignIn = { launcher -> viewModel.startSignIn(launcher) },
+                onSignInResult = { intent -> viewModel.handleSignInResult(intent) },
+                onCompleteSetup = { user, name -> viewModel.completeSetup(user, name) },
+                onSignOut = { viewModel.signOut() },
+            )
+        }
+        is AuthUiState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator(color = glass.colors.accentFill)
+            }
+        }
+    }
 }

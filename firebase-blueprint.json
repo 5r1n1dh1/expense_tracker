@@ -1,0 +1,54 @@
+{
+  "entities": {
+    "Workspace": {
+      "collection": "workspaces",
+      "fields": {
+        "name": { "type": "string" },
+        "memberUids": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "timestamp" },
+        "schemaVersion": { "type": "integer" }
+      }
+    },
+    "Expense": {
+      "collection": "workspaces/{wid}/expenses",
+      "fields": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "amountPaise": { "type": "integer" },
+        "kind": { "type": "string" },
+        "currencyCode": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "dateEpochDay": { "type": "integer" },
+        "note": { "type": "string" },
+        "linkedExpenseId": { "type": "string" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" },
+        "deletedAt": { "type": "timestamp" },
+        "authorUid": { "type": "string" }
+      }
+    },
+    "Category": {
+      "collection": "workspaces/{wid}/categories",
+      "fields": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "iconKey": { "type": "string" },
+        "colorToken": { "type": "string" },
+        "sortOrder": { "type": "integer" },
+        "isSystem": { "type": "boolean" },
+        "isHidden": { "type": "boolean" },
+        "updatedAt": { "type": "timestamp" },
+        "deletedAt": { "type": "timestamp" }
+      }
+    },
+    "SyncMeta": {
+      "collection": "workspaces/{wid}/meta",
+      "fields": {
+        "lastPulledAt": { "type": "integer" },
+        "lastPushAt": { "type": "integer" },
+        "lastSweepAt": { "type": "integer" },
+        "lastSyncError": { "type": "string" }
+      }
+    }
+  }
+}

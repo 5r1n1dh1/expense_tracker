@@ -1,17 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kharch</string>
-
-    <!--
-      Credential Manager needs the *web* OAuth client id — Firebase console →
-      Authentication → Sign-in method → Google → "Web SDK configuration" →
-      "Web client ID". It is NOT the Android client id, and it is not a secret
-      (access is gated by package name + signing SHA, D3).
-
-      The main source set wins over a
-      generated resource, so this value MUST match the type-3 OAuth client
-      in the committed google-services.json (expense-tracker-1013e) — if the
-      console is re-emitted, update strings.xml and the JSON together.
-    -->
-    <string name="default_web_client_id" translatable="false">492411597447-b0g3i00cletno0dupt91uti4pcihue2t.apps.googleusercontent.com</string>
 </resources>

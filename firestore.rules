@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isMember(wid) {
+      return request.auth != null
+        && request.auth.uid in get(/databases/$(database)/documents/workspaces/$(wid)).data.memberUids;
+    }
+
+    function validExpense() {
+      let e = request.resource.data;
+      return e.amountPaise is int && e.amountPaise >= 0
+          && e.kind in ['EXPENSE', 'REFUND']
+          && e.dateEpochDay is int
+          && e.name is string && e.name.size() > 0 && e.name.size() <= 120;
+    }
+
+    match /workspaces/{wid} {
+      allow read: if isMember(wid);
+      allow create: if request.auth != null
+                    && request.auth.uid in request.resource.data.memberUids
+                    && request.resource.data.memberUids.size() <= 5;
+      allow update: if isMember(wid)
+                    && request.resource.data.memberUids.hasAll(resource.data.memberUids)
+                    && request.resource.data.memberUids.size() <= 5;
+      allow delete: if false;
+
+      match /expenses/{eid} {
+        allow read: if isMember(wid);
+        allow create, update: if isMember(wid) && validExpense();
+        allow delete: if isMember(wid);
+      }
+
+      match /categories/{cid} {
+        allow read: if isMember(wid);
+        allow create, update, delete: if isMember(wid);
+      }
+
+      match /meta/{mid} {
+        allow read, write: if isMember(wid);
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

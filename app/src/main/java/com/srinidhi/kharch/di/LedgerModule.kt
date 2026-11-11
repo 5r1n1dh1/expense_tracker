@@ -112,9 +112,25 @@ object LedgerModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+    fun provideFirebaseFirestore(@ApplicationContext context: Context): FirebaseFirestore {
+        val dbId = context.getString(com.srinidhi.kharch.R.string.firestore_database_id)
+        return FirebaseFirestore.getInstance(dbId)
+    }
 
     @Provides
     @Singleton
     fun provideRemoteLedger(dataSource: FirestoreRemoteDataSource): RemoteLedger = dataSource
+
+    @Provides
+    @Singleton
+    fun provideMembershipStore(
+        dataSource: FirestoreRemoteDataSource,
+    ): com.srinidhi.kharch.data.workspace.MembershipStore = dataSource
+
+    @Provides
+    @Singleton
+    fun provideGoogleSignInClient(
+        @ApplicationContext context: Context,
+    ): com.srinidhi.kharch.data.auth.GoogleSignInClient =
+        com.srinidhi.kharch.data.auth.GoogleSignInClient(context)
 }

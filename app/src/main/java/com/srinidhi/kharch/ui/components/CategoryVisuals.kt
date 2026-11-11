@@ -175,5 +175,3 @@ fun rememberCategoryAccent(colorToken: String): Color {
     }
 }
 
-/** Unused import guard — keeps `GlassIntensity` from being reported as unused. */
-private val UnusedGlassIntensity: Unit = Unit
