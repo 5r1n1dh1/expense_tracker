@@ -71,8 +71,8 @@ fun AuthSetupScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            onSignInResult(result.data!!)
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.let(onSignInResult)
         }
     }
 

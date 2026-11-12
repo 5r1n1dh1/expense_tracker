@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kharch</string>
+    <string name="default_web_client_id" translatable="false">70267696628-nfpm1uasi54s65i8j0j4fqjgnqnbmvjg.apps.googleusercontent.com</string>
 </resources>
